@@ -1,6 +1,9 @@
 ---
 title: "ICA 1.2 Loading and addressing data"
-format: html
+format: 
+  html: 
+    self-contained: true
+    embed-resources: true
 editor: visual
 ---
 
@@ -18,6 +21,12 @@ signif(rnorm(8, 161.3, .19*sqrt(5510)), 4)
 # your code here 
 ```
 
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-1.R"))
+```
+
 ## Task - Attach a package
 
 Let's attach the readr package to load the CSV file. Call `library(readr)` below.
@@ -25,6 +34,14 @@ Let's attach the readr package to load the CSV file. Call `library(readr)` below
 ```{r}
 
 ```
+
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-2.R"))
+```
+
+Note that many packages have *dependencies*, meaning that they must attach and utilize other packages in order order to function.
 
 ## Task - Load a CSV as a data frame
 
@@ -39,6 +56,12 @@ Let's load some data from a study which treated polyps.
 # your code here 
 ```
 
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-3.R"))
+```
+
 ## Task - A data frame's names
 
 Try calling `names()` on your `polyps` data frame. What do you think this function does? Why might this be useful?
@@ -46,6 +69,12 @@ Try calling `names()` on your `polyps` data frame. What do you think this functi
 ```{r}
 # 🅿
 # your code here 
+```
+
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-4.R"))
 ```
 
 ## Task - Address a variable
@@ -60,6 +89,12 @@ Try calling `names()` on your `polyps` data frame. What do you think this functi
 # your code here 
 ```
 
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-5.R"))
+```
+
 ## Task - Arithmetic with variables
 
 1.  Calculate the mean of `ages`, rounded to two significant digits.
@@ -71,4 +106,10 @@ Try calling `names()` on your `polyps` data frame. What do you think this functi
 ```{r}
 # 🅿
 # your code here 
+```
+
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.2-a-6.R"))
 ```

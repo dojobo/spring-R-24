@@ -1,7 +1,7 @@
 ---
 title: "ICA 1.1 Console calculations"
 format: 
-  html: 
+  html:
     self-contained: true
     embed-resources: true
 editor: visual
@@ -23,6 +23,12 @@ c(-23.22, -22.90, -23.19, -22.87, -22.94, -23.19)
 
 ```
 
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.1-a-1.R"))
+```
+
 ## Task - Use mathematical functions
 
 Consider the age values below. What are the mean, standard deviation, and median of these patients' ages?
@@ -36,6 +42,12 @@ c(27, 40, 31, 53, 25)
 # rather than having to type them
 
 
+```
+
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.1-a-2.R"))
 ```
 
 ## Task - Wrap functions
@@ -57,3 +69,11 @@ round(mean(c(1, 99, 100)), 4)
 # your code here 
 
 ```
+
+Check your solution here:
+
+```{r}
+writeLines(readr::read_file("src/scripts/soln-1.1-a-3.R"))
+```
+
+`signif()` accepts two arguments, `x` and `digits`. Notice that we specify `digits` in the last function call above. :::

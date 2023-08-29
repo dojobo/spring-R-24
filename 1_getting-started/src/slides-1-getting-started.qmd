@@ -480,8 +480,6 @@ The data frame is the "R-native" representation of the data. We read and write t
 
 # Exercise 1.2: loading and addressing data
 
-------------------------------------------------------------------------
-
 # Wrap up
 
 ## Conclusion
