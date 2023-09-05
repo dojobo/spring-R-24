@@ -1,12 +1,13 @@
 ---
-title: "Summer R"
-subtitle: "Session 2: Data frames"
+title: "Working with Data Frames"
+subtitle: "Fall R '23"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:
     self-contained: true
-    footer: "Summer R 2: Data frames"
+    footer: "R 2: Working with Data Frames"
     logo: "images/ULS_logo1.png"
+    code-copy: true
 editor: visual
 ---
 
@@ -14,46 +15,82 @@ editor: visual
 #| output: false
 #| echo: false
 library(tidyverse)
+library(readxl)
 ```
 
 ## Agenda {.smaller}
 
-1.  Introductions and review
-2.  [R Projects]
-3.  [The pipe operator]
-4.  [Selecting and ordering df variables]
-5.  [Sorting rows in a data frame]
-6.  [Filtering (subsetting) rows](#filtering-subsetting-rows)
-7.  [Summarizing and grouping a data frame]
-8.  [Base R plotting]
+1.  [What is working with data frames "about"?]
+2.  [The pipe operator]
+3.  [Manipulating cases and variables]
+    -   [Sidebar: missing data (NA)](#sidebar-missing-data-na)
+    -   [Sidebar: factors] (categorical variables)
+4.  [Summarizing and grouping cases]
+5.  [Reshaping (pivoting) data](#reshaping-pivoting-data)
+6.  [Joining (merging) related tables](#joining-merging-related-tables)
 
-## The dplyr package
+# What is working with data frames "about"?
+
+## Quick review: what is a data frame?
+
+-   A tabular format: rows (*observations*) and columns (*variables*)
+-   Analogous to a single table in an Excel worksheet
+-   Variables are *named* (e.g., patient ID, age, etc.), may be queried with `names(df)`, and may be accessed by `df$variable_name` (where `df` is the data frame of interest)
+-   **Each variable is a vector**
+    -   💡 We can use vectorized operations/functions on any variable
+
+## 
+
+![Process diagram of the Cross-industry standard process for data mining (CRISP-DM). Image credit: Kenneth Jensen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:CRISP-DM_Process_Diagram.png).](images/479px-CRISP-DM_Process_Diagram.png){fig-align="center"}
+
+## Data Understanding and Data Preparation
+
+The functionality we're learning about today will enable us to:
+
+-   explore data (via summary statistics, filtering, and grouping) to enhance our Data Understanding
+-   clean (standardize), restructure, and combine data in Preparation for analysis
+
+Anecdotally, "everyone is interested in modeling, but 90% of the work is in the prerequisite Business Understanding, Data Understanding, and Data Preparation."
+
+## The dplyr and tidyr packages {.smaller}
 
 ::: columns
-::: {.column width="50%"}
-"dplyr is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges."
+::: {.column width="67%"}
+> [dplyr](https://dplyr.tidyverse.org/) is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges.
+
+> The goal of [tidyr](https://tidyr.tidyverse.org/) is to help you create **tidy data**. Tidy data is data where:
+>
+> 1.  Every column is variable.
+> 2.  Every row is an observation.
+> 3.  Every cell is a single value.
 :::
 
-::: {.column width="50%"}
-![](images/dplyr-logo.png){fig-align="center"}
+::: {.column width="33%"}
+![](images/dplyr-logo.png){fig-align="center" width="152"}
+
+![](images/tidyr-logo.png){fig-alt="tidyr logo" fig-align="center" width="152"}
 :::
 :::
 
-## Introductions
+## ...and using penguins examples
 
-## ICA and Homework review
+```{r}
+#| eval: false
+#| echo: true
+install.packages("palmerpenguins")
+```
 
-# R Projects (.RProj files)
+```{r}
+#| echo: true
+library(palmerpenguins)
 
-## R Projects
+# load palmerpenguins' data into your environment:
+data(penguins)
+names(penguins)
 
--   A file (**`.RProj`**) which lives in the root of a project directory
--   RStudio uses this file to:
-    -   set working directory
-    -   remember command history (console + History pane)
-    -   remember project-specific option settings (Tools menu)
--   It's recommended to create an RProject for each of your projects that use RStudio, to help keep your work organized.
--   File \> New Project...
+```
+
+palmerpenguins is one of many examples of an R package which functions as a downloadable data set.
 
 # The pipe operator
 
@@ -116,160 +153,186 @@ paste(delta_t_avg, "°C avg. ΔT")
 
 ## Keyboard shortcuts revisited {.smaller}
 
++------------------------------+--------------------+---------------------+
 | Function                     | Windows            | macOS               |
-|------------------------------|--------------------|---------------------|
++==============================+====================+=====================+
 | Execute line                 | Ctrl-Enter         | ⌘-Enter             |
++------------------------------+--------------------+---------------------+
 | Assignment operator **`<-`** | Alt - (Alt-hyphen) | ⌥ - (Option-hyphen) |
++------------------------------+--------------------+---------------------+
 | Pipe operator **`%>%`**      | Ctrl-Shift-M       | ⌘-Shift-M           |
++------------------------------+--------------------+---------------------+
 
-# Selecting and ordering df variables
+# Manipulating cases and variables
 
-## Step 0: load data
+## dplyr functions for manipulating cases and variables
 
-```{r}
-#| echo: true
-polyps <- read_csv("data/polyps.csv")
-names(polyps)
-```
+::: columns
+::: {.column width="50%"}
+**For cases (rows):**
 
-## Selecting variables (columns) with `dplyr::select()` {.smaller}
+-   **`filter()`** returns cases which match 1+ logical condition(s)
+-   **`arrange()`** returns cases sorted according to 1+ variable(s)
+:::
 
--   We often only want a small number of the data frame's variables when investigating or visualizing a question
--   `select(df, ...)` returns `df` with only the columns listed in `...`, one column or column-expression per argument
+::: {.column width="50%"}
+**For variables (columns):**
 
-```{r}
-#| echo: true
-polyps %>% 
-  select(participant_id:baseline, age)
-```
+-   **`select()`** returns only certain variables of the data
+-   **`rename()`** renames variables
+-   **`mutate()`** creates new variables
+:::
+:::
 
-## `select()` notes
+------------------------------------------------------------------------
 
--   Indicate ranges with **`:`** (colon)
-    -   `age:baseline` is columns age through baseline (inclusive)
--   Numeric indices may be used instead of names
--   Columns in the result will follow whatever order you use with `select()`, i.e., you can rearrange at the same time that you select
--   A minus sign (**`-`**) prepended to a column name *negates* or *excludes* it ("all columns except x")
+![[Artwork by \@allison_horst](https://twitter.com/allison_horst) (CC BY 4.0)](images/filter.png){fig-alt="Cartoon showing three fuzzy monsters either selecting or crossing out rows of a data table. If the type of animal in the table is “otter” and the site is “bay”, a monster is drawing a purple rectangle around the row. If those conditions are not met, another monster is putting a line through the column indicating it will be excluded. Stylized text reads “dplyr::filter() - keep rows that satisfy your conditions.”" fig-align="center"}
 
-## `select()` example
+## `filter()` subsets cases {.smaller}
 
-```{r}
-#| echo: true
+-   `filter(df, ...)` where `df` is the data frame and `...` are 1+ logical expressions; each case that tests `TRUE` to the condition(s) will appear in the output
+    -   *Logical expression* means that the expression returns `TRUE` or `FALSE` when evaluated
+-   For the operations on the next slide, remember they are vectorized---the comparison is made to *each* value in the vector, and a vector of equal length is returned.
 
-# select cols participant_id thru treatment except age, and col. no. 7
+##  {.smaller}
 
-polyps %>% 
-  select(participant_id:treatment, -age, 7)
-```
++--------------------+------------------------------------+-------------------------------+------------------------------------------------------------------------------------------+
+| Syntax             | Example(s)                         | Name                          | Notes                                                                                    |
++====================+====================================+===============================+==========================================================================================+
+| **`< <= > >= ==`** | `age <= 34`                        | Comparators                   | `==` means "equals" and works with both numeric and character data.                      |
+|                    |                                    |                               |                                                                                          |
+|                    | `treatment_group == "A"`           |                               |                                                                                          |
++--------------------+------------------------------------+-------------------------------+------------------------------------------------------------------------------------------+
+| **`%in%`**         | `age %in% 30:35`                   | Membership (or "in") operator | Asks, "is the value found in vector $y$?"                                                |
+|                    |                                    |                               |                                                                                          |
+|                    | `treatment_group %in% c("A", "B")` |                               |                                                                                          |
++--------------------+------------------------------------+-------------------------------+------------------------------------------------------------------------------------------+
+| **`is.na()`**      | `is.na(age)`                       | is.na                         | Asks, "is the value missing?" Missingness is represented in R with `NA` (see next slide) |
+|                    |                                    |                               |                                                                                          |
+|                    | `is.na(treatment_group)`           |                               |                                                                                          |
++--------------------+------------------------------------+-------------------------------+------------------------------------------------------------------------------------------+
+| **`& |`**          | `age < 34 & age >= 25`             | Boolean AND and OR operators  | Combine logical expressions                                                              |
++--------------------+------------------------------------+-------------------------------+------------------------------------------------------------------------------------------+
 
-# Sorting rows in a data frame
+: Useful logical operators and functions
 
-## Sorting df rows with `dplyr::arrange()` {.smaller}
+## Sidebar: missing data (NA) {#sidebar-missing-data-na .smaller}
 
--   Often we want to sort our data frame by values in one or more columns, e.g., alphabetically by name, or (more realistically) by treatment group and by outcome variable
--   `arrange(df, ...)` returns `df` with the rows reordered according to arguments (which are variable names)
+*Missing data* or the concept of missingness is represented in R with the symbol `NA` (*not* the string `"NA"` in quotation marks), for "Not Available". It is equivalent to an empty cell in Excel.
 
-```{r}
-#| echo: true
-polyps %>% 
-  arrange(baseline) %>% print(n=7)
-```
+::: columns
+::: {.column width="50%"}
+**What `NA` can mean** (depending on context)
 
-## `arrange()` notes
+-   Incomplete observation and/or mistake in data entry
+-   Chose not to answer
+-   Variable not relevant for this case
+:::
 
--   The function `desc()` ("descending") can be wrapped around a variable to reverse it
--   You can combine sort-variables sequentially, by giving more arguments: `arrange(colA, colB)` will sort by `colA`, and then sort by `colB` after that (as a tie-breaker).
--   Each argument can be an expression if needed (column name will usually be good enough)
+::: {.column width="50%"}
+**Consequences of `NA`**
 
-## `arrange()` example
+-   Can't do math with `NA` (`NA`$\ \neq 0$), or make number-line comparisons
+-   `NA` must be removed for arithmetic such as `mean()`; see `na.rm` argument and similar for many functions
+-   Cases having `NA` for a variable of interest may need to be dropped or imputed for analysis
+:::
+:::
 
-```{r}
-#| echo: true
-polyps %>% 
-  arrange(treatment, sex, desc(age))
-```
+## Examples for `filter()`
 
-# ICA 2.1: Pipes, selecting, and sorting
-
-# Filtering (subsetting) rows {#filtering-subsetting-rows}
-
-## Step 0: logical expressions {.smaller}
-
--   `logical` is one of R's basic data types, for representing `TRUE` and `FALSE`; expressions which produce a logical value are *logical expressions*
--   Fundamentally, `TRUE`/`FALSE` are needed for application if-else logic
--   Numeric comparators **`> >= == != <= <`** all produce logical results
--   There are also functions which return logical values (we'll see some later)
--   logical AKA Boolean or conditional
-
-## Logical expression examples
-
-```{r}
-#| echo: true
-t_final
-
-t_final > 32
-t_final > 35.84
-t_final <= 35.82
-
-t_final == 35.67  # equals
-t_final != 35.67  # does not equal
-```
-
-## Filtering rows with `dplyr::filter()` {.smaller}
-
--   We often need to exclude certain rows from our data, or isolate only certain rows of interest, depending on values in the data: for example, only one gender, or exclude patients whose BMI is outside the range of study, etc.
--   `filter(df, logical_expr)` returns `df` but only with rows for which `logical_expr` evaluates as `TRUE`
+🐧
 
 ```{r}
+#| eval: false
 #| echo: true
 
-polyps %>% 
-  filter(age > 24)
+# fetch observations of Gentoo species
+penguins %>% filter(species == "Gentoo")
+
+# which female penguins have a bill longer than 40 mm?
+penguins %>% filter(bill_length_mm > 40 & sex == "female") 
+
+# which penguins do not have a body mass recorded?
+penguins %>% filter(is.na(body_mass_g)) 
+
 ```
 
-## `filter()` notes {.smaller}
+## `arrange()` sorts cases
 
--   String comparison uses `==` or functions (e.g., "name contains X")
--   The expression may contain multiple variables/columns, but it is evaluated only once for each row in the source df
--   Combining multiple expressions:
-    -   **`&`**, the AND operator $\rightarrow$ true iff both A and B are true
-    -   **`|`**, the OR operator $\rightarrow$ true if A or B is true (or both)
-    -   `xor()` is the exclusive OR $\rightarrow$ true iff A or B is true (but not both)
--   Any logical expression may be negated/reversed by prepending with **`!`**
-
-## `filter()` example
+-   `arrange(df, ...)` returns `df` with cases sorted according to one or more variables
+-   To sort in reverse (descending) order, wrap the variable name in `desc()`
 
 ```{r}
+#| eval: false
 #| echo: true
-# retain non-placebo patients aged 18 and older:
 
-polyps %>% 
-  filter(treatment != "placebo", age >= 18)
+# sort penguins with longest bill first
+penguins %>% arrange(desc(bill_length_mm))
+
+# sort penguins by island and then by species (alphabetically)
+penguins %>% arrange(island, species)
 ```
 
-# Summarizing and grouping a data frame
+## `select()` and `rename()` work on variables {.smaller}
 
-## Base R `summary()` {.smaller}
-
--   `summary()` is a base R function that prints a summary of an object; the exact format depends on the object and data type
-    -   numeric vector: five-number summary (very convenient!)
-    -   factor, i.e. categorical vector: count of cases in each category
-    -   dataframe: `summary()` of each column
--   Try out `summary()` on new objects as you come across them, in addition to printing them on the console.
--   `summary()` is very quick and easy, but its results aren't in a convenient format for further calculation/reporting. Its output is also fixed.
-
-## Summarizing a data frame with `dplyr::summarize()` {.smaller}
-
--   Often we want to aggregate or simplify multiple rows of information into one row, e.g., mean of a variable for all observations.
--   `dplyr::summarize()` applies aggregating functions to variables and returns a data frame.
+-   `select(df, v1, v2, v3)`, where `v1` etc. are variable names, is for selecting which variables you want to retain in the data frame.
+    -   Numbers also work as an alternative to names
+    -   Use a negative sign ( **`-`** ) to *negate* a column (i.e., "all variables except...")
+    -   Note: dropped variables are removed from the data frame, not merely hidden!
+-   `rename(df, new_name = old_name)` renames a variable `old_name` to `new_name`
 
 ```{r}
+#| eval: false
 #| echo: true
-polyps %>% 
-  summarize(mean(age), sd(age))
+# select the species column, and cols 4 through 8 except for 5:
+penguins %>% select(species, 4:8, -5)
+
+# rename species to "common_name"
+penguins %>% rename(common_name = species)
 ```
 
-## `summarize()` notes {.smaller}
+## `mutate()` creates a new variable in the data frame {.smaller}
+
+-   `mutate(df, new_variable = expr)` creates `new_variable` in `df`
+-   `expr` may be: a mathematical expression, a function call, a vector of appropriate length, or a fixed value. `expr` may also implement "if-then" logic, using one or more variables of the same case (e.g., "If temperature is above 90, then heat category is High").
+
+```{r}
+#| eval: false
+#| echo: true
+
+# isolate body masses, then convert penguin mass from g to kg and lbs:
+penguins %>% 
+  select(body_mass_g) %>% 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         body_mass_lbs = body_mass_g / 453.6)
+
+# to store the result back to penguins:
+penguins %>% 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         body_mass_lbs = body_mass_g / 453.6)
+```
+
+## Sidebar: factors {.smaller}
+
+A common `mutate()` task is to convert an existing variable's type or measurement units. For example, our `penguins_raw$Island` variable is encoded as character data, but we would like to convert it to a categorical variable. In R, a categorical variable is encoded in a **factor**, a vector which accepts only certain values. Factors may be ordered.
+
+```{r}
+#| eval: false
+#| echo: true
+# penguins_raw is a version of penguins without factors encoded
+
+summary(penguins_raw$Island) # no level counts
+
+# convert Island to factor, and assign result back to penguins_raw:
+penguins_raw <- penguins_raw %>% 
+  mutate(Island = as_factor(Island))
+
+summary(penguins_raw$Island) # levels with counts!
+```
+
+# Summarizing and grouping cases
+
+## `summarize()` returns a single row of summary calculations {.smaller}
 
 -   Aggregation functions
     -   center: `mean()`, `median()`
@@ -281,77 +344,169 @@ polyps %>%
 -   To name the columns in the output data frame, use named arguments.
 -   Usually we will summarize after grouping (next section)
 
-## `summarize()` example
+## Examples for `summarize()`
+
+The `glimpse()` function is used because its compact vertical view is perfect for a single-row table.
+
+```{r}
+#| eval: false
+#| echo: true
+# median, mean, and SD of body mass:
+penguins %>% 
+  summarize(count = n(),
+            median_mass = median(body_mass_g, na.rm = TRUE),
+            mean_mass = mean(body_mass_g, na.rm = TRUE),
+            sd_mass = sd(body_mass_g, na.rm = TRUE)) %>% 
+  glimpse()
+
+# mean of each numeric variable:
+penguins %>% 
+  summarize(across(is.numeric, mean, na.rm=TRUE)) %>% 
+  glimpse()
+```
+
+## `group_by()` creates groupings using a variable {.smaller}
+
+-   `group_by(v1)` groups cases in the data according to their value for the variable (factor) `v1`.
+-   Grouping information is appended to the data frame as metadata
+-   `summarize()` understands these groups and applies function calls to the groups, rather than the whole data set, returning one row for each group
+-   `group_by(v1, v2)` groups cases by `v1` and then `v2` (order does matter)
+
+## Examples for `group_by()`
+
+```{r}
+#| eval: false
+#| echo: true
+# mean and sd body mass of each observed species:
+penguins %>% 
+  group_by(species) %>% 
+  summarize(n = n(),
+            mean_mass = mean(body_mass_g, na.rm=TRUE),
+            sd_mass = sd(body_mass_g, na.rm=TRUE)) %>% 
+  glimpse()
+
+# mean of each numeric variable for each species and sex:
+penguins %>% 
+  group_by(species, sex) %>% 
+  summarize(n = n(),
+            across(is.numeric, mean, na.rm=TRUE))
+# note groups for sex == NA
+```
+
+# Reshaping (pivoting) data {#reshaping-pivoting-data}
+
+## 
+
+![Illustration from the [Openscapes](https://www.openscapes.org/) blog [*Tidy Data for reproducibility, efficiency, and collaboration*](https://www.openscapes.org/blog/2020/10/12/tidy-data/) by Julia Lowndes and Allison Horst](images/tidy-data.jpg){fig-alt="Stylized text providing an overview of Tidy Data. The top reads “Tidy data is a standard way of mapping the meaning of a dataset to its structure. - Hadley Wickham.” On the left reads “In tidy data: each variable forms a column; each observation forms a row; each cell is a single measurement.” There is an example table on the lower right with columns ‘id’, ‘name’ and ‘color’ with observations for different cats, illustrating tidy data structure." fig-align="center"}
+
+## `pivot_longer()` collapses 3+ columns into two {.smaller}
+
+...creating more rows (a "longer" data frame)
+
+`pivot_longer(cols, names_to, values_to)` where
+
+-   `cols` is a vector of variable names (or selection such as using `across()`), whose columns you want to collapse
+-   `names_to` is the name of a new variable which will receive the *names* of the collapsing columns
+-   `values_to` is the name of a new variable which will receive the *values* of the collapsing columns
+
+## `pivot_longer()` example: religion and income {.smaller}
+
+tidyr's `relig_income` dataset, from a Pew religion and income survey, has 1 row per *religion* and a column for the *count* of people in each income category. Let's treat each count as its own observation. (This and following example are from the tidyr [Pivoting vignette](https://tidyr.tidyverse.org/articles/pivot.html), also available by running `vignette("pivot")`.)
 
 ```{r}
 #| echo: true
+#| eval: false
+data(relig_income)
+names(relig_income)
+# sample 5 random rows:
+slice_sample(relig_income, n = 5)
 
-# summarize the table's number of patients, 
-# avg age, avg baseline, and max baseline:
+relig_income_long <- relig_income %>% 
+  pivot_longer(cols = 2:11,
+               names_to = "income_category",
+               values_to = "count")
 
-polyps %>% 
-  summarize(row_count = n(), 
-            avg_age = round(mean(age), 1),
-            avg_baseline = round(mean(baseline), 1),
-            max_baseline = max(baseline))
+slice_sample(relig_income_long, n = 5)
 ```
 
-## Grouping data frame rows with `dplyr::group_by()` {.smaller}
+## `pivot_wider()` expands two columns into more
 
--   We often want to identify and examine subgroups within the data using categorical variables.
--   `group_by(df, variable)` returns a data frame with each row grouped according to its value for `variable`; this grouped df is then used with other dplyr functions (especially `summarize()`)
+...creating more variables (a "wider" data frame)
+
+`pivot_wider(names_from, values_from)` where
+
+-   `names_from` is the name of a variable whose values will form the *names* of the new variables
+-   `values_from` is the name of a variable whose values will form the *values* of the new variables, corresponding to the appropriate name
+
+## `pivot_wider()` example: fish encounters {.smaller}
+
+> It's relatively rare to need `pivot_wider()` to make tidy data, but it's often useful for creating summary tables for presentation, or data in a format needed by other tools. The `fish_encounters` dataset, contributed by Myfanwy Johnston, describes when fish swimming down a river are detected by automatic monitoring stations. Many tools used to analyse this data need it in a form where each station is a column.
 
 ```{r}
 #| echo: true
-polyps %>% 
-  group_by(treatment) %>% print(n=7)
+#| eval: false
+data(fish_encounters)
+names(fish_encounters)
+# sample 5 random rows:
+slice_sample(fish_encounters, n = 5)
+
+fish_encounters_wide <- fish_encounters %>% 
+  pivot_wider(names_from = station,
+              values_from = seen)
+
+# use glimpse() for previewing a wide table
+slice_sample(fish_encounters_wide, n = 5) %>% 
+  glimpse()
 ```
 
-## `group_by()` notes
+# Joining (merging) related tables {#joining-merging-related-tables}
 
--   More than one grouping is possible (and sequence matters)
--   If you want to group e.g. by numeric ranges/bins, you'll first create a categorical variable using the numeric variable as a basis (we will do this in session 4 or 5)
--   Also compatible with other dplyr functions: `filter()`, `arrange()`, etc.
+## The relational model
 
-## `group_by()` example
+Data of interest often "live" in more than one table.
+
+![Detail of a relational database diagram, relating Patients records to their Diagnoses and Medications. Image credit: Tsedenjav.Sh, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0), via Wikimedia Commons.](images/Relational.png){fig-alt="A database diagram of three related tables titled \"Patients,\" \"Medication,\" and \"Diagnoses\"" fig-align="center"}
+
+## `left_join()` treats the *left* table as primary
+
+-   `left_join(x, y, by)` where `x` is the left table, `y` is the right table, and `by` is the variable name by/on which to join
+-   All rows in `x` will be retained in the output, whether they match in `y` or not
+-   The number of rows in the output will depend on how many matches there are in `y` for each row of `x`
+
+## `left_join()` example: penguin species {.smaller}
+
+Let us supplement our penguin observations with a table of information about the penguin species. Note that not all of our observed species in `x` exist in `y`. Note also that there is a species in `y` that we have not observed in `x`.
 
 ```{r}
 #| echo: true
-# group by treatment and sex,
-# then calculate avg baseline and avg 3-month polyp count
-
-polyps %>% 
-  group_by(treatment, sex) %>% 
-  summarize(avg_baseline = round(mean(baseline), 1),
-            avg_number3m = round(mean(number3m), 1))
+#| eval: false
+species_info <- read_excel("data/penguin-species.xlsx")
+species_info
+penguins %>% 
+  left_join(y=species_info, by="species")
 ```
 
-# ICA 2.2: Filtering, summarizing, and grouping
+## Other tabular combinations {.smaller}
 
-# Base R plotting
-
-## Easy base R plots {.smaller}
-
--   `hist(x)` gives a histogram for numeric vector x
--   `barplot(x)` produces a bar plot of categorical variable x
--   `plot(x, y)` produces a scatter plot of vectors x and y
-
-```{r}
-#| echo: true
-hist(polyps$age)
-```
-
-------------------------------------------------------------------------
+-   More joins
+    -   `right_join()` treats the *right* df as the primary table, keeping all its rows
+    -   `inner_join()` returns the minimal set, because it requires values in *both* tables
+    -   `full_join()` returns the maximal set, keeping all rows from both df's
+-   Row- and column-binding: combining tables non-relationally (bind_rows(), bind_cols()
+-   Set operations
+    -   union
+    -   intersect
+    -   setdiff
 
 # Wrap up
 
-## Conclusion
+## Session in review
 
-We learned about:
+Today we learned about:
 
--   Managing our work with RProjects
 -   The pipe operator
--   Selecting data frame variables, and sorting and filtering data frame rows
--   Grouping and summarizing data frame rows for analysis by aggregation
+-   Manipulating data frames
+-   Grouping and summarizing data to better understand it
+-   Reshaping and joining of tables
 
-Next time: visualizing with ggplot2!
+Join us next week for data visualization!
