@@ -307,7 +307,7 @@ penguins %>%
          body_mass_lbs = body_mass_g / 453.6)
 
 # to store the result back to penguins:
-penguins %>% 
+penguins <- penguins %>% 
   mutate(body_mass_kg = body_mass_g / 1000,
          body_mass_lbs = body_mass_g / 453.6)
 ```

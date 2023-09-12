@@ -1,86 +1,112 @@
 ---
-title: "Summer R"
-subtitle: "Session 3: Data visualization"
+title: "Data Visualization"
+subtitle: "Fall R '23"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:
     self-contained: true
-    footer: "Summer R 3: Data visualization"
+    footer: "R 3: Data Visualization"
     logo: "images/ULS_logo1.png"
-    execute:
-      echo: true
+    code-copy: true
+    smaller: true
 editor: visual
+execute:
+  echo: true
+  eval: false
 ---
 
 ```{r}
 #| output: false
 #| echo: false
+#| eval: true
 library(tidyverse)
-library(medicaldata)
+library(readxl)
 ```
 
 ## Agenda {.smaller}
 
-1.  [R data sets]
-2.  [The grammar of graphics; aesthetic mapping]
-3.  [Univariate plots]
-4.  [Multivariate plots]
-5.  [Rendering notebooks]
+1.  [The grammar of graphics]
+2.  [Plotting distribution]
+3.  [Scatter plots]
+4.  [Comparing categories]
+5.  [Heat maps of two-way tables]
+6.  [Time series]
+7.  [Small multiples]
+8.  [Labeling, theming, and annotation]
+
+## About the trainer {.smaller}
+
+**Dominic Bordelon, Research Data Librarian**\
+University Library System, University of Pittsburgh\
+[dbordelon\@pitt.edu](mailto:dbordelon@pitt.edu)
+
+::: columns
+::: {.column width="50%"}
+Services for the Pitt community:
+
+-   Consultations
+-   Training (on-request and via public workshops)
+-   Talks (on-request and publicly)
+-   Research collaboration
+:::
+
+::: {.column width="50%"}
+Support areas and interests:
+
+-   Computer programming fundamentals, esp. for data processing and analysis
+-   Open Science and Data Sharing
+-   Data stewardship/curation
+-   Research methods; science and technology studies
+:::
+:::
+
+## Fall R Series
+
+| \#    | Date     | Title                             |
+|-------|----------|-----------------------------------|
+| 1     | 8/29     | Getting Started with Tabular Data |
+| 2     | 9/5      | Working with Data Frames          |
+| **3** | **9/12** | **Data Visualization**            |
+| 4     | 9/19     | Inference and Modeling Intro      |
+| 5     | 9/26     | Machine Learning Intro            |
+
+## 
+
+![](images/r-office-hour-fall-23.png){fig-alt="Advertisement for the R Drop-in Hour service" fig-align="center"}
 
 ## The ggplot2 package
 
 ::: columns
-::: {.column width="70%"}
-"ggplot2 is a system for declaratively creating graphics, based on The Grammar of Graphics (Wilkinson et al. 2005). You provide the data, tell ggplot2 how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details."
+::: {.column width="50%"}
+"ggplot2 is a system for declaratively creating graphics, based on [The Grammar of Graphics](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448/ref=as_li_ss_tl). You provide the data, tell ggplot2 how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details."
 :::
 
-::: {.column width="30%"}
+::: {.column width="50%"}
 ![](images/ggplot2-logo.png){fig-align="center"}
 :::
 :::
 
-## ICA review, questions
-
-## The medicaldata package {.smaller}
-
-::: columns
-::: {.column width="30%"}
-[![](images/medicaldata-logo.png){fig-align="center"}](https://higgi13425.github.io/medicaldata/)
-:::
-
-::: {.column width="70%"}
-"19 medical datasets for teaching Reproducible Medical Research with R. . . . These datasets range from reconstructed versions of James Lind's scurvy dataset (1757) and the original Streptomycin for Tuberculosis trial (1948), a 2012 RCT of indomethacin to prevent post-ERCP pancreatitis that I was involved in, to cohort data on SARS-CoV2 testing results (2020). Many of the datasets come from the American Statistical Association's TSHS (Teaching Statistics in the Health Sciences) Resources Portal. . . ."
-:::
-:::
-
-## R data sets
-
--   For training, exploration, practice, run `data()` to see what data sets you have available via attached packages
--   Base R has some sets (`iris, mpg`); tidyverse comes with several (`storms, nycflights`)
--   There are also actual data sets available---e.g., genomic annotation data and experimental data---as packages
--   Our polyps and laryngoscope data come from medicaldata; let's install and attach medicaldata now.
-
-------------------------------------------------------------------------
+## ...and using penguins examples
 
 ```{r}
 #| eval: false
-
-install.packages("medicaldata")
-library(medicaldata)
-
-# see which data sets medicaldata offers:
-data(package="medicaldata")
-
-# load the polyps dataset into your environment:
-data(polyps)
-
-# read the help article on polyps:
-?polyps
+#| echo: true
+install.packages("palmerpenguins")
 ```
 
-# The grammar of graphics; aesthetic mapping
+```{r}
+#| eval: true
+library(palmerpenguins)
 
-## The grammar of graphics {.smaller}
+# load palmerpenguins' data into your environment:
+data(penguins)
+names(penguins)
+
+```
+
+palmerpenguins is one of many examples of an R package which functions as a downloadable data set.
+
+## The grammar of graphics
 
 ::: columns
 ::: {.column width="50%"}
@@ -101,164 +127,402 @@ data(polyps)
 :::
 :::
 
-## Aesthetic mapping {.smaller}
+## Aesthetic mapping
 
--   "How is a variable represented visually?"
--   Required for every plot
-    -   (which aesthetics are required, is determined by the type of plot)
--   `ggplot()` and `geom_` function calls take a `mapping` argument
+::: columns
+::: {.column width="50%"}
+An aesthetic mapping, created with `aes()`, associates an aesthetic property of the plot with a variable in your data.
 
-![Commonly used aesthetics (source: [Wilke 2023](https://wilkelab.org/SDS375/slides/aesthetic-mappings.html))](images/common-aesthetics-1.png){fig-align="center"}
+`penguins` example: I want a scatter plot of flipper length on x and bill length on y. The aesthetic mapping would be:\
+`aes(x = flipper_length_mm, y = bill_length_mm)`
+:::
 
-# Univariate plots
+::: {.column width="50%"}
+Common aesthetics:
 
-## Histograms: `geom_histogram()` {.smaller}
+-   `x`, `y`
+-   `color`, `fill`
+-   `linetype`
+-   `size`
+-   `shape` (of points)
 
--   x axis divided into bins; count of observations in each bin
--   `binwidth` argument controls bins in data units
+![Commonly used aesthetics (source: Wilke 2023)](images/common-aesthetics-1.png){fig-align="center"}
+:::
+:::
+
+# Plotting distribution
+
+## Histograms and density plots {.smaller}
+
+`geom_histogram(mapping, binwidth)` and `geom_density(mapping)`
+
+A histogram "bins" a variable's values and charts how many values are in each bin, giving a sense of central tendency and spread. A density plot works similarly, but it produces a smooth curve while sacrificing countable units.
 
 ```{r}
-ggplot(laryngoscope) +
-  geom_histogram(aes(x=age), binwidth = 2)
+# distribution of body mass:
+penguins %>% 
+  ggplot() +
+  geom_histogram(mapping = aes(x = body_mass_g))
+
+# remove NA values, and specify bin width:
+penguins %>% 
+  drop_na(body_mass_g) %>% 
+  ggplot() +
+  geom_histogram(mapping = aes(x = body_mass_g),
+                 binwidth = 100)
+
+# density plot:
+penguins %>% 
+  ggplot() +
+  geom_density(aes(x = body_mass_g))
+
+# layering histogram and density plot
+# note that 1) mapping is specified in ggplot(), and inherited by geoms; 2) histogram's y mapping needs adjusting to be compatible with density plot
+penguins %>% 
+  drop_na(body_mass_g) %>% 
+  ggplot(aes(x = body_mass_g)) +
+  geom_histogram(mapping=aes(y=after_stat(density)), binwidth = 100) +
+  geom_density()
 ```
 
-## Frequency polygons: `geom_freqpoly()` {.smaller}
+## Comparing distributions: violin, box
 
--   A histogram with lines drawn between bin points
--   Useful for comparing across levels of a categorical variable
+`geom_violin()`, `geom_boxplot()`. Mapping a categorical variable onto an axis will make a violin or box plot for each level of the variable.
+
+A violin plot mirrors a density plot across the axis. A box plot marks interquartile range (white box), median (line inside the box), tails, and outliers (individual points). (where outlier has a distance $\gt 1.5 \times \mathrm{IQR}$ from the median)
 
 ```{r}
-ggplot(laryngoscope) +
-  geom_freqpoly(aes(x=age), binwidth=3)
+# distribution of body mass across species:
+penguins %>% 
+  ggplot() +
+  geom_violin(aes(x = body_mass_g,
+                  y = species))
+
+penguins %>% 
+  ggplot() +
+  geom_boxplot(aes(x = body_mass_g,
+                   y = species))
 ```
 
-## Density plots: `geom_density()`  {.smaller}
+# Scatter plots
 
--   Smoothed version of a histogram
--   Note: y axis is not count of observations but a computed density estimate
+## `geom_point()` plots points
+
+A scatter plot compares continuous variables $x$ and $y$ on a Cartesian plane. `geom_point()` can take several aesthetics (`size, shape, color`), but be careful not to overload your plot with information.
 
 ```{r}
-ggplot(laryngoscope) +
-  geom_density(aes(x=age))
+penguins %>% 
+  ggplot() +
+  geom_point(aes(x = flipper_length_mm, 
+                 y = bill_length_mm))
+
+# encode species as color:
+penguins %>% 
+  ggplot() +
+  geom_point(aes(x = flipper_length_mm, 
+                 y = bill_length_mm,
+                 color = species))
 ```
 
-# ICA 3.1: Univariate plots
+## `geom_smooth()` adds a smoother to a scatter plot {.smaller}
 
-# Multivariate plots
+A natural next step to a scatter plot is to fit a regression model. `geom_smooth()` does this job; specify the modeling function you want with the `method` argument. The default methods are `loess`, local polynomial regression fitting (when $n \lt 1000$), or `gam`, generalized additive model with restricted maximum likelihood (when $n \geq 1000$). See `?stats::loess` and `?mgcv::gam` for more info on these modeling functions.
 
-## Scatter plots: `geom_point()` {.smaller}
-
-Compare two continuous variables (x and y), looking for a relationship
+(If you have fit your own model outside of ggplot, you should instead use `predict()` to generate points to plot with `geom_line()`.)
 
 ```{r}
-ggplot(laryngoscope) +
-  geom_point(aes(x=ease, y=total_intubation_time))
-```
-
-## Add a smoother: `geom_smooth()` {.smaller}
-
-Regression line! (use the `method` argument to set the kind of regression: `"lm"` for linear model, `"loess"`, etc.)
-
-```{r}
-ggplot(laryngoscope, aes(x=ease, y=total_intubation_time)) +
+# using default loess:
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = bill_length_mm)) +
   geom_point() +
   geom_smooth()
+
+# using a linear model, lm():
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = bill_length_mm)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
+# encode species as color:
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+                 y = bill_length_mm,
+                 color = species)) +
+  geom_point() +
+  geom_smooth(method="lm")
 ```
 
-## Bar charts: `geom_bar()` {.smaller}
+# Comparing categories
 
--   Compare counts (default) or a summary statistic (e.g., mean) among categories
--   The easiest way to handle stats besides count is to calculate them yourself in the df prior to visualization, and use `stat="identity"`
--   We will see how to add error bars once we know how to calculate a new variable in the data frame.
+## `geom_bar()` makes bar charts of *counts*
 
 ```{r}
-ggplot(polyps) + 
-  geom_bar(aes(x=sex))
+penguins %>% 
+  ggplot(aes(x = species)) +
+  geom_bar()
+
+# note 2 variables, y axis, and dodge position
+# we also reorder the factors for aesthetic reasons 
+# ...and note unexpected colors!
+penguins %>%
+  mutate(species = fct_rev(fct_infreq(species)),
+         sex = fct_infreq(sex)) %>% 
+  ggplot(aes(y = species, fill = sex)) +
+  geom_bar(position = position_dodge2(reverse=TRUE, preserve="single"))
 ```
 
-------------------------------------------------------------------------
+## Bar charts of calculated statistics
 
-Example bar plot with summary stats; Randomization are the treatment groups:
+Perform summary calculations using dplyr, then use `geom_bar()` with `stat = "identity"` to plot the numbers as-is (default is `"count"`). ⚠ When plotting a summary statistic, one should also include error! `geom_errorbar(), geom_errorbarh(), geom_linerange()`
+
+Example: mean body mass for each species and gender, with standard error
 
 ```{r}
-laryngoscope %>%
-  mutate(Randomization = as_factor(Randomization)) %>% 
-  group_by(Randomization) %>% 
-  summarize(mean_intubation_time = mean(total_intubation_time, na.rm=TRUE)) %>% 
-  ggplot() +
-  geom_bar(aes(x=Randomization, y=mean_intubation_time), stat="identity")
+penguins %>%
+  drop_na(body_mass_g) %>%
+  group_by(species) %>% 
+  summarize(mean_mass_g = mean(body_mass_g),
+            standard_error = sd(body_mass_g)/sqrt(n())
+            ) %>% 
+  ggplot(aes(x = species, y = mean_mass_g)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymax = mean_mass_g + standard_error,
+                    ymin = mean_mass_g - standard_error), width = 0.5, color="blue")
+
+# note 2 variables, y axis, and dodge position
+# we also reorder the factors for aesthetic reasons 
+# ...and note unexpected colors!
+penguins %>%
+  drop_na(body_mass_g) %>% 
+  group_by(species, sex) %>% 
+  summarize(mean_mass_g = mean(body_mass_g),
+            standard_error = sd(body_mass_g)/sqrt(n())
+            ) %>% 
+  ggplot(aes(y = species, fill = sex, x = mean_mass_g)) +
+  geom_bar(stat="identity",
+           position = position_dodge2()) +
+  geom_errorbarh(aes(xmin = mean_mass_g - standard_error,
+                     xmax = mean_mass_g + standard_error),
+                 position = position_dodge2())
 ```
 
-## Box plots: `geom_boxplot()` {.smaller}
+## Stacked proportional bars and pies
 
--   Quartile summary (median, 25 %ile, 75 %ile) and outliers
--   Relative box widths also give a sense of distribution shape
--   Outlier definition: $|\mathrm{median - outlier}| > 1.5 \times \mathrm{IQR}$
--   Mean is often marked as an annotation
+Sometimes we want to compare *proportions* of category membership. With `position = "fill"`, each bar has the same height, and the `fill` aesthetic works proportionately.
 
 ```{r}
-ggplot(polyps) +
-  geom_boxplot(aes(y=sex, x=age))
+penguins %>% 
+  ggplot(aes(x = species, fill=sex)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent)
 ```
 
-## Violin plots: `geom_violin()`
-
-Comparative histograms rotated and reflected; alternative to box plot
+A pie chart in ggplot2 terms is a proportional bar cast onto a polar coordinate system.
 
 ```{r}
-ggplot(polyps) +
-  geom_violin(aes(x=treatment, y=number3m))
+penguins %>% 
+  mutate(species = fct_rev(fct_infreq(species))) %>% 
+  ggplot(aes(x = "", fill=species)) +
+  geom_bar(position = "fill",
+           color = "white",
+           width = 1) +
+  coord_polar("y", start=0) +
+  theme_void()
 ```
 
-## Heat maps of two-way tables: `geom_tile()` {.smaller}
+# Heat maps of two-way tables
 
-Conditional distributions, i.e., how do two categorical variables interact?
+## Two-way tables
+
+The *two-way table* or *contingency table* format shows the *conditional distribution* of observations among two categorical variables. In penguin terms, how many penguins of each species were observed on each of three islands?
 
 ```{r}
-polyps %>% 
-  group_by(sex, treatment) %>% 
+#| eval: true
+
+penguins %>% 
+  janitor::tabyl(species, island)
+
+```
+
+## Heat maps of two-way tables
+
+A graphical version of the previous table is given by `geom_tile()`. However, you will need to group and summarize the data first.
+
+```{r}
+penguins %>% 
+  group_by(species, island) %>% 
   summarize(n = n()) %>% 
-  ggplot() + 
-  geom_tile(aes(x=sex, y=treatment, fill=n))
+  ggplot() +
+  geom_tile(aes(y=species, x=island, fill=n))
 ```
 
-## Line graphs: `geom_line()` and `geom_path()` {.smaller}
+# Time series
 
--   Show changes over time
--   `geom_path()` uses data order to connect observations
--   `geom_line()` uses x-axis variable to connect observations
--   Use `group` aesthetic for other observation groupings, e.g., per-patient
--   May be combined with `geom_point()` for pronounced points (or "connected scatterplot")
+## `geom_line()` connects point observations
 
-------------------------------------------------------------------------
+Time series data are the most common application for line graphs. Since line graphs expect a single $y$ for each $x$, I recommend using dplyr to generate the table that you need. The examples use `n()` as the summarizing function, but one could also use `sum()` of a variable (for example).
 
 ```{r}
-covid_testing %>% 
-  group_by(pan_day, result) %>% 
-  summarize(n=n()) %>% 
+# observations over time
+penguins %>% 
+  group_by(year) %>% 
+  summarize(n = n()) %>% 
   ggplot() +
-  geom_line(aes(x=pan_day, y=n, color=result))
+  geom_line(aes(x=year, y=n))
+
+# a more interesting example, using tropical storm/hurricane data
+?storms
+storms %>% 
+  group_by(year) %>% 
+  summarize(n = n()) %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=n)) +
+  labs(y = "Storm observations")
 ```
 
-# ICA 3.2: Multivariate plots
+## Categories over time
 
-## Rendering notebooks  {.smaller}
+Consider `geom_line()` for comparison, or `geom_area()` for showing cumulative distribution.
 
--   Besides sending a notebook to a colleague, you can also **Render** your notebook into a variety of formats, e.g., html, word docx, pdf, etc.
--   In the header of your notebook, take note of the `format:` heading
--   Change the value of this heading and click Render in the editor toolbar, to render your notebook in the target format
--   Multiple formats can be expressed in the same file; simply add them in header
--   See this [Quarto Tutorial, Multiple Formats](https://quarto.org/docs/get-started/authoring/rstudio.html#multiple-formats) section for more guidance
+```{r}
+# observations over time
+penguins %>% 
+  group_by(year, species) %>% 
+  summarize(n = n()) %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=n, linetype=species))
+
+# storms by hurricane category:
+# note: ~5-7 is the greatest number of categories you can color code before readers start having difficulty interpreting!
+storms %>% 
+  mutate(category = as_factor(category)) %>%
+  drop_na(category) %>% 
+  group_by(year, category) %>% 
+  summarize(n = n()) %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=n, color=category)) +
+  labs(y = "Storm observations")
+
+storms %>% 
+  mutate(category = as_factor(category)) %>%
+  drop_na(category) %>% 
+  group_by(year, category) %>% 
+  summarize(n = n()) %>% 
+  ggplot() +
+  geom_area(aes(x=year, y=n, fill=category)) +
+  labs(y = "Storm observations")
+```
+
+# Small multiples
+
+## Small multiples
+
+Small multiples AKA faceting replicate a plot in columns and/or rows, with one plot for each level of some categorical variable.
+
+Want to combine multiple plots into one figure? Check out the [`patchwork`](https://github.com/thomasp85/patchwork) package.
+
+```{r}
+# one line graph for each storm category
+storms %>% 
+  mutate(category = as_factor(category)) %>%
+  drop_na(category) %>% 
+  group_by(year, category) %>% 
+  summarize(n = n()) %>% 
+  ggplot() +
+  geom_line(aes(x=year, y=n, color=category)) +
+  facet_wrap(vars(category), ncol=3, nrow=2) +
+  labs(y = "Storm observations")
+
+# a scatter for each island, with groups colored
+penguins %>% 
+  ggplot(aes(x=flipper_length_mm, 
+             y=bill_length_mm,
+             color=species)) +
+  geom_point() +
+  facet_wrap(vars(island), nrow=2, ncol=2)
+```
+
+# Labeling, theming, and annotation
+
+## `labs()` sets labels
+
+```{r}
+penguins %>% 
+  drop_na(flipper_length_mm, bill_length_mm) %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = bill_length_mm,
+             color = species)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  labs(title = "Gentoo tend to have the longest flippers",
+       x = "Flipper length (mm)",
+       y = "Bill length (mm)",
+       color = "Species",
+       caption = "Source: Gorman KB, Williams TD, Fraser WR (2014)")
+```
+
+## `theme_` layers change the plot's look
+
+Start typing `theme_` in RStudio to see available options, or install and attach the `ggthemes` package for more. There is also a `theme()` function for adjusting specific aspects of the plot.
+
+Lastly, `annotate()` can add annotations to the plot, using the coordinate system.
+
+```{r}
+penguins %>% 
+  drop_na(body_mass_g) %>% 
+  ggplot() +
+  geom_histogram(mapping = aes(x = body_mass_g),
+                 binwidth = 100) +
+  annotate(geom="text", x = 6200, y = 7,
+           label="Biggest\n penguin") +
+  annotate(geom="segment", x = 6200, y = 5,
+           xend = max(penguins$body_mass_g, na.rm=TRUE), 
+           yend = 1.5) +
+  theme_bw()
+```
+
+## We can't forget to save!
+
+`ggsave(filename, plot)` where `plot` is a `ggplot()` object you have assigned. `.png`, `.svg`, or `.pdf` in the `filename` determines the output type.
+
+Other arguments to use: `width, height, units`
+
+```{r}
+my_plot <- penguins %>% 
+  drop_na(flipper_length_mm, bill_length_mm) %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = bill_length_mm,
+             color = species)) +
+  geom_point()
+
+ggsave("my_plot.png", my_plot)
+```
+
+## Visualize *responsibly* {.smaller}
+
+::: columns
+::: {.column width="67%"}
+-   Consider the validity and reliability of your measures
+-   Always cite any data you visualize which you did not collect yourself
+-   Design for accessibility
+-   Study best practices, and some of the pitfalls/abuses of viz, to keep your plot honest
+:::
+
+::: {.column width="33%"}
+[![Wilke 2019, available free-to-read at \<https://clauswilke.com/dataviz/\>](images/wilke.png){fig-alt="Cover for the book \"Fundamentals of Data Visualization\" by Claus O. Wilke" fig-align="center"}](https://clauswilke.com/dataviz/)
+:::
+:::
 
 # Wrap up
 
-## Conclusion
+## Session in review
 
-We learned about:
+Today we learned about:
 
--   the "grammar of graphics" and "aesthetic mapping" concepts
--   how to make several kinds of plots
--   data packages
--   rendering notebooks to various formats
+-   the grammar of graphics and aesthetic mapping
+-   lots of plot types! for a variety of applications
+-   some easy ways of customizing plots
 
-Next time: missing data, calculating new variables, and joining tables
+Join us next week for inference and modeling!

@@ -1,0 +1,38 @@
+---
+title: "Data visualization exercises"
+format: html
+editor: visual
+---
+
+## Attach packages
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+## `penguins` tasks
+
+```{r}
+data(penguins)
+names(penguins)
+summary(penguins)
+```
+
+Create a histogram (`geom_histogram()`) of `bill_depth_mm`.
+
+```{r}
+
+```
+
+Plot a scatter (`geom_point()`) of `bill_length_mm` and `bill_depth_mm`.
+
+```{r}
+
+```
+
+Plot a box plot (`geom_boxplot()`) comparing male vs. female body masses for Gentoo penguins. (Hint: you will need to `filter()` `penguins` first, since we are only interested in Gentoo for this question.)
+
+```{r}
+
+```
