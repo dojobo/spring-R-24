@@ -1,0 +1,330 @@
+---
+title: "Inference and Modeling Intro"
+subtitle: "Fall R '23"
+author: "Dominic Bordelon, Research Data Librarian, ULS"
+format: 
+  revealjs:
+    self-contained: true
+    footer: "R 4: Inference and Modeling Intro"
+    logo: "images/ULS_logo1.png"
+    code-copy: true
+    smaller: true
+editor: visual
+execute:
+  echo: true
+  eval: false
+---
+
+```{r}
+#| output: false
+#| echo: false
+#| eval: true
+library(tidyverse)
+library(tidymodels)
+library(infer)
+```
+
+## Agenda {.smaller}
+
+1.  Inference and hypothesis testing
+    1.  Distribution functions
+    2.  Hypothesis tests
+2.  Modeling (simple linear regression)
+
+## About the trainer {.smaller}
+
+**Dominic Bordelon, Research Data Librarian**\
+University Library System, University of Pittsburgh\
+[dbordelon\@pitt.edu](mailto:dbordelon@pitt.edu)
+
+::: columns
+::: {.column width="50%"}
+Services for the Pitt community:
+
+-   Consultations
+-   Training (on-request and via public workshops)
+-   Talks (on-request and publicly)
+-   Research collaboration
+:::
+
+::: {.column width="50%"}
+Support areas and interests:
+
+-   Computer programming fundamentals, esp. for data processing and analysis
+-   Open Science and Data Sharing
+-   Data stewardship/curation
+-   Research methods; science and technology studies
+:::
+:::
+
+## Fall R Series
+
+| \#    | Date     | Title                             |
+|-------|----------|-----------------------------------|
+| 1     | 8/29     | Getting Started with Tabular Data |
+| 2     | 9/5      | Working with Data Frames          |
+| 3     | 9/12     | Data Visualization                |
+| **4** | **9/19** | **Inference and Modeling Intro**  |
+| 5     | 9/26     | Machine Learning Intro            |
+
+## 
+
+![](images/r-office-hour-fall-23.png){fig-alt="Advertisement for the R Drop-in Hour service" fig-align="center"}
+
+## Today's packages
+
+::: columns
+::: {.column width="50%"}
+`stats` (part of base R, automatically attaches)
+
+`infer`: tidy inference
+
+`tidymodels`, particularly:
+
+-   `broom`: tidy model representation
+-   `parsnip`: standardized modeling interface
+
+```{r}
+install.packages(c("tidymodels", "infer"))
+```
+:::
+
+::: {.column width="50%"}
+![](images/tidymodels-logo.png){width="150"}![](images/broom-logo.png){width="150"}
+
+![](images/infer-logo.png){width="150"} ![](images/parsnip-logo.png){width="150"}
+:::
+:::
+
+## ...and using penguins examples
+
+```{r}
+#| eval: false
+#| echo: true
+install.packages("palmerpenguins")
+```
+
+```{r}
+#| eval: true
+library(palmerpenguins)
+
+# load palmerpenguins' data into your environment:
+data(penguins)
+names(penguins)
+
+```
+
+# Inference and hypothesis testing
+
+## Distribution functions
+
+::: columns
+::: {.column width="50%"}
+```{r}
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) + 
+  stat_function(fun=dnorm) +
+  labs(title = "N(0, 1)")
+```
+:::
+
+::: {.column width="50%"}
+Probability distributions in R are typically described by four functions. The examples here are for the Normal distribution.
+
+All have `mean` and `sd` arguments.
+
+-   `dnorm(x)` for density (height of curve) at $x$
+-   `pnorm(q)` for getting a probability $p$ value at some $q$, i.e., $P(X \le q)$
+-   `qnorm(p)` for finding the quantile of some $p$
+-   `rnorm(n)` for generating a random sample of size $n$ from $N(\mu, \sigma)$
+:::
+:::
+
+## Distributions
+
+| Distribution           | Name in functions | Example function | Applications                                              |
+|----------------|----------------|----------------|------------------------|
+| Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
+| Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
+| Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
+| Chi-squared ($\chi^2$) | `chisq`           | `pchisq()`       | Chi-squared tests (goodness of fit in a 2-way table)      |
+| $F$                    | `f`               | `pf()`           | ANOVA; $F$-tests (model goodness-of-fit)                  |
+
+: Commonly used distributions in the `stats` package
+
+## Hypothesis tests
+
+Hypothesis tests in base R tend to follow this format:
+
+-   a function call
+-   accepts vector or data frame inputs
+-   returns an object which can be assigned
+-   can be calculated "by hand" using other R functions
+    -   example: `t.test()` can also be found by calculating the $t$ test statistic, followed by `pt()` to obtain a $p$
+
+## Student's $t$-test
+
+::: columns
+::: {.column width="50%"}
+One-sample $t$-test
+
+"Is sample mean $\bar{x}$ different from population mean $\mu$?"
+
+$$
+t = \frac{\bar{x}-\mu_0}{s/\sqrt{n}}
+$$
+
+```{r}
+mu <- 4147
+x_bar <- mean(penguins$body_mass_g, na.rm=TRUE)
+s <- sd(penguins$body_mass_g, na.rm=TRUE)
+n <- penguins[!is.na(penguins$body_mass_g), "body_mass_g"] %>% 
+  pull() %>% 
+  length()
+
+t <- (x_bar - mu) / (s / sqrt(n))
+
+# find p for this t score, on t distribution with n-1 degrees of freedom:
+pt(q = t, 
+   df = (n - 1), 
+   lower.tail = TRUE)
+
+# or:
+t.test(x = penguins$body_mass_g, 
+       mu = mu)
+```
+:::
+
+::: {.column width="50%"}
+Two-sample $t$-test (independent)
+
+"Is sample mean $\bar{X}_1$ different from sample mean $\bar{X}_2$?"
+
+$$
+t = \frac{\bar{X}_1-\bar{X}_2}{s_p \cdot \sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}
+$$
+
+```{r}
+adelie <- penguins %>%
+  filter(species == "Adelie")
+chinstrap <- penguins %>% 
+  filter(species == "Chinstrap")
+
+t.test(x = adelie$body_mass_g,
+       y = chinstrap$body_mass_g)
+```
+:::
+:::
+
+## Chi-squared ($\chi^2$) test
+
+"Is the conditional distribution across two categorical variables equal, or varied?"
+
+`chisq.test(x, y = NULL)` where `x` is a matrix, or `x` and `y` are vectors
+
+`chisq_test(formula)` where `formula` is written in the format `response ~ explanatory`
+
+```{r}
+# how are penguins distributed across species and islands?
+chisq_test(penguins, island ~ species)
+```
+
+⚠ This is not a good example of a chi-squared test, statistically speaking: our data do not meet the requirements for the test! But the example is left here because R will let us do it! (and it is syntactically correct)
+
+## Tidy inference: `infer` 
+
+```{r}
+t <- penguins %>% 
+  specify(response = body_mass_g) %>% 
+  hypothesize(null = "point", mu = 4147) %>% 
+  calculate(stat = "t") %>% 
+  pull()
+
+penguins %>% 
+  specify(response = body_mass_g) %>% 
+  assume(distribution = "t") %>% 
+  visualize() + 
+  shade_p_value(obs_stat = t, direction = "greater")
+
+penguins %>% 
+  t_test(response = body_mass_g,
+         mu = 4147)
+
+penguins %>% 
+  filter(species %in% c("Adelie", "Chinstrap")) %>% 
+  t_test(formula = body_mass_g ~ species)
+```
+
+# Modeling
+
+## Simple linear regression
+
+"What is the relationship between $X$ and $Y$?"
+
+Considering
+
+$$
+Y = \beta_0 + \beta_1X + \epsilon
+$$
+
+where $\beta_0$ is the $y$ intercept, $\beta_1$ is the slope coefficient, $X$ is the explanatory or predictor variable, $\epsilon$ is irreducible error, and $Y$ is the response variable. We want to estimate (or "fit") $\hat{\beta}_0$ and $\hat{\beta}_1$ such that the sum of squared residuals is minimized as much as possible.
+
+`lm(formula, data)` fits a linear model and returns a model object, where formula is written `response ~ explanatory` and `data` is a data frame.
+
+```{r}
+lm(flipper_length_mm ~ bill_length_mm, 
+   data = penguins) %>% 
+  summary()
+
+lm_flipper_bill <- lm(flipper_length_mm ~ bill_length_mm, data = penguins)
+```
+
+## `predict()` outputs from a model
+
+"For some $x$, what $\hat{y}$ does the model predict?"
+
+Models in R implement behavior for the `predict()` function, which supplies a data frame of input values $X$ and returns a data frame containing corresponding $Y$ values. The input data frame needs variable(s) of the same name(s) as the predictor(s). Or you can omit the data frame and get the fitted values.
+
+💡 `predict()` functions are found in documentation under article names like `predict.lm`, even though the function call is `predict()`.
+
+```{r}
+# min to max values, incrementing by 0.5:
+x_range <- data.frame(bill_length_mm = seq(from=min(penguins$bill_length_mm, na.rm=TRUE), to=max(penguins$bill_length_mm, na.rm=TRUE), by=0.5))
+
+predict(lm_flipper_bill, newdata = x_range)
+
+# fitted values
+predict(lm_flipper_bill)
+```
+
+## Tidy modeling: `parsnip`
+
+```{r}
+linear_reg() %>% 
+  set_engine("lm") %>% 
+  fit(flipper_length_mm ~ bill_length_mm, 
+      data = penguins)
+
+linear_reg() %>% 
+  set_engine("lm") %>% 
+  fit(flipper_length_mm ~ bill_length_mm, 
+      data = penguins)
+```
+
+## Model *responsibly* {.smaller}
+
+-   Consider the validity and reliability of your measures
+-   Correlation $\neq$ causation
+-   Always keep in mind the assumptions made by your chosen method/model
+-   Validate unexpected results by recomputing "by hand" and/or running a different code implementation (or even in a different software)
+
+# Wrap up
+
+## Session in review
+
+Today we learned about:
+
+-   how distributions and inference work in R
+-   linear modeling in R
+-   old and new ways of doing these things
+
+Join us next week for machine learning intro!
