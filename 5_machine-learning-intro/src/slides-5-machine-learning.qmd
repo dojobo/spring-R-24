@@ -119,6 +119,10 @@ May be applied in "generative" settings such as a chat bot
 
 ![A widely adopted conceptual framework of data science competencies, illustrating where ML fits. Image source: Andrew Silver, ["The Essential Data Science Venn Diagram"](https://towardsdatascience.com/the-essential-data-science-venn-diagram-35800c3bef40) (2018)](images/silver-venn.jpg){fig-align="center"}
 
+Definitions
+
+Applications
+
 ## Trends you'll see in ML {.smaller}
 
 -   Validation ("training" and "test" sets), iteration, randomness, and model selection
@@ -126,9 +130,10 @@ May be applied in "generative" settings such as a chat bot
 -   High-dimensional data (many predictors/columns), e.g, genetic data
     -   "Curse of dimensionality": regression fails in $p$-dimensional space as $p$ (number of predictors) approaches and surpasses $n$, because the space is too sparsely populated to avoid overfitting.
 -   Accuracy/Explainability tradeoff
--   Many methods require a large sample size, compared to classical statistics; methods tend to be more naive compared to domain-embedded statistics, but may also leverage compute to a much greater degree
+-   Many ML methods require a large sample size, compared to classical statistics; methods (as currently practiced) tend to be more naive compared to domain-embedded statistics, but may also leverage compute to a much greater degree
 -   "Ensemble methods" which combine many simple models to form a single, powerful model
 -   Application of Occam's Razor (simplest is best) when confronted with similar results from different models
+-   ML "black box" methods can be useful for exploration even if they cannot always answer research questions
 
 ## 
 
@@ -176,12 +181,14 @@ Often describes statistical concepts with different language, due to separate di
     -   Support vector machines (SVMs), binary classifiers with nonlinear class boundaries
     -   Artificial neural networks (ANNs), which are *deep learning* when sufficiently layered
 -   **Unsupervised learning**: there is no response $Y$ (output) against which to validate; exploratory
-    -   **Clustering techniques**
+    -   Clustering techniques
     -   Probability density estimation (i.e., inferring distribution)
     -   Principal Components Analysis (PCA), a dimensionality reducing method
 -   Reinforcement learning: the model receives positive/negative feedback to outputs and learns accordingly
 
 We will take a closer look at the ones in bold.
+
+\[VISUAL\]
 
 # Regression
 
@@ -305,7 +312,7 @@ penguins_clean <- penguins %>%
 species_fit <- naiveBayes(species ~ body_mass_g + flipper_length_mm, data = penguins_clean)
 
 species_fit
-predict(species_fit, data.frame(body_mass_g=3500, flipper_length_mm=))
+predict(species_fit, data.frame(body_mass_g=3500, flipper_length_mm=22))
 ```
 
 ## Model *responsibly* {.smaller}

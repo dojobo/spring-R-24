@@ -60,20 +60,10 @@ Support areas and interests:
 
 -   I strongly don't believe in "sink or swim" or the weed-out mentality---reach out if you need help!
 -   How will we use our time?
-    -   Each session 2 hours, organized thematically
-    -   Brief lecture with slides
+    -   Some lecturing with slides
     -   Practice with hands-on Exercises; work in couples/groups (recommended) or independently
-    -   We'll do the lecture/activity cycle twice per each session, and then a wrap-up.
 -   You/we might not finish all the exercises in the allotted time; that's OK.
 -   There is no homework *per se*, but I suggest to practice applying what we learn to your own data between sessions. I also plan to share suggested reading for each session.
-
-## Two exercise tracks
-
-🅰⚕ biomedical data examples
-
-🅱👥 social science and civic data examples
-
-![Lesson format](images/lesson-format.svg){fig-alt="Lecture 1, followed by Exercise 1 (in two tracks), followed by Lecture 2, followed by Exercise 2 (in two tracks)" fig-align="center"}
 
 # Thinking about data
 
@@ -94,9 +84,9 @@ Support areas and interests:
 
 ## Ways to work with data
 
--   Tabular format
--   Document format (XML)
--   Computer vision and audition
+-   Tabular format -- quantitative, statistical methods
+-   Document format (XML) -- qualitative methods
+-   Computer vision and audition -- algorithmic processing, deep learning models
 
 In this course, we are working with string data---interpreted as numeric values and pieces of text---in a tabular format.
 
@@ -198,10 +188,6 @@ In this course, we are working with string data---interpreted as numeric values 
 -   Created with the **`c()`** function ("combine")
 -   R *loves* vectors---so much, that any single value you give to R, is returned as a 1-length vector!
 -   Very many operations are *vectorized*, meaning that they apply to every value in a vector by default.
-
-```{r}
-
-```
 
 # Exercise 1.1: console calculations
 

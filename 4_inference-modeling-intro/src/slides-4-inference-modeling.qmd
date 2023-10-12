@@ -142,7 +142,7 @@ All have `mean` and `sd` arguments.
 ## Distributions
 
 | Distribution           | Name in functions | Example function | Applications                                              |
-|----------------|----------------|----------------|------------------------|
+|-----------------|-----------------|-----------------|----------------------|
 | Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
 | Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
 | Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
@@ -230,7 +230,7 @@ chisq_test(penguins, island ~ species)
 
 ⚠ This is not a good example of a chi-squared test, statistically speaking: our data do not meet the requirements for the test! But the example is left here because R will let us do it! (and it is syntactically correct)
 
-## Tidy inference: `infer` 
+## Tidy inference: `infer`
 
 ```{r}
 t <- penguins %>% 
