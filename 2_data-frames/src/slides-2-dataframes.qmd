@@ -163,6 +163,20 @@ paste(delta_t_avg, "°C avg. ΔT")
 | Pipe operator **`%>%`**      | Ctrl-Shift-M       | ⌘-Shift-M           |
 +------------------------------+--------------------+---------------------+
 
+## Exercise 2.1
+
+Pipe operator
+
+`ex2.1-pipe-operator.qmd`
+
+Practice...
+
+-   attaching packages
+-   using the pipe operator
+-   loading a CSV file and getting summary statistics
+
+💡 Ctrl-Shift-M / ⌘-Shift-M inserts **`%>%`** (pipe)
+
 # Manipulating cases and variables
 
 ## dplyr functions for manipulating cases and variables
@@ -392,6 +406,18 @@ penguins %>%
             across(is.numeric, mean, na.rm=TRUE))
 # note groups for sex == NA
 ```
+
+## Exercise 2.2
+
+Data frame manipulation
+
+`ex2.2-data-frame.qmd`
+
+Practice...
+
+-   using dplyr functions to interact with a data frame
+-   using multiple functions together in a pipeline
+-   grouping and summarizing observations
 
 # Reshaping (pivoting) data {#reshaping-pivoting-data}
 

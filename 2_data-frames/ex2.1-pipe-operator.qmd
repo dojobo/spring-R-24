@@ -1,0 +1,163 @@
+---
+title: "Exercise 2.1 Pipe operator"
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+editor: visual
+---
+
+## Attach packages
+
+Run the chunk directly below to attach the `tidyverse` package.
+
+```{r}
+#| label: chunk1
+library(tidyverse)
+```
+
+In `chunk2` below, we install the `readxl` package, which allows us to read Excel files. Run the chunk to install the package. In case you already have the package installed, it will update. If your installation is already up-to-date, nothing will happen.
+
+```{r}
+#| label: chunk2
+install.packages("readxl")
+```
+
+In `chunk3` below, attach the `readxl` package. (Hint: `chunk1`)
+
+```{r}
+#| label: chunk3
+
+# your code here
+
+```
+
+*Check answer: (run chunk and compare code to yours)*
+
+```{r}
+#| label: chunk3-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c3.R"))
+```
+
+Today we will also use the `psych` package. In `chunk4`, install and attach `psych`.
+
+```{r}
+#| label: chunk4
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk4-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c4.R"))
+```
+
+## Load an Excel file
+
+Consider the file called `epi_data.xlsx`. Relative to our current position in the `2_data-frames` folder, it is inside a subfolder called `data`. What is the file's (relative) path?
+
+*Check answer:*
+
+```{r}
+#| label: chunk5-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c5.txt"))
+```
+
+Now, use `read_excel()` to load `data/epi_data.xlsx` as a data frame. Assign the result to an object called `epi`. Then run the name `epi` on its own to see a representation of the data frame. Using the Environment pane, how many rows and columns does this data frame have?
+
+```{r}
+#| label: chunk6
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk6-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c6.R"))
+```
+
+## Get a summary 
+
+In `chunk7`, use the `names()` function on `epi` to see what columns it has.
+
+```{r}
+#| label: chunk7
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk7-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c7.R"))
+```
+
+Recall that we can access a variable using the dollar sign `$`, for example if we were interested in `deviceid`, the fourth variable, we could type `epi$deviceid`. Recall also that `summary()` gives a six-number summary for a continuous variable. (We could also use `summary()` on the entire data frame, but 55 variables will mean a long result.)
+
+In `chunk8`, get a `summary()` of the `age_years` variable.
+
+```{r}
+#| label: chunk8
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk8-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c8.R"))
+```
+
+## Use the pipe operator (and alternate summary)
+
+Recall that the pipe operator, `%>%`, lets us un-nest function calls. For example, both lines of code in `chunk9` average the sequence of numbers 1 to 10, and then round it to the nearest whole number.
+
+```{r}
+#| label: chunk9
+
+round(mean(seq(1, 10)), 0)            # 6
+
+seq(1, 10) %>% mean() %>% round(0)    # also 6
+```
+
+In `chunk10`, calculate the mean of `epi$age_years` using the pipe operator.
+
+```{r}
+#| label: chunk10
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk10-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c10.R"))
+```
+
+Recall that we have attached the `psych` package. In `chunk11`, use the `describe()` function with the pipe operator and `epi`, to see an alternative way of summarizing all variables in the data frame.
+
+```{r}
+#| label: chunk11
+
+# your code here
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk11-soln
+writeLines(readr::read_file("src/scripts/soln-2.1-c11.R"))
+```
