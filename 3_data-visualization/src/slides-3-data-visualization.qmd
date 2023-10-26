@@ -127,6 +127,8 @@ palmerpenguins is one of many examples of an R package which functions as a down
 :::
 :::
 
+## 
+
 ## Aesthetic mapping
 
 ::: columns

@@ -1,0 +1,1 @@
+hist(penguins$bill_depth_mm)

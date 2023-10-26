@@ -1,0 +1,1 @@
+plot(penguins$bill_length_mm, penguins$bill_depth_mm)

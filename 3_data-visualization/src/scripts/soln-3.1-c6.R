@@ -1,0 +1,1 @@
+ggplot(penguins) + geom_point(aes(bill_length_mm, bill_depth_mm))

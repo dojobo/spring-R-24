@@ -1,0 +1,1 @@
+ggplot(penguins) + geom_histogram(aes(x=bill_depth_mm), binwidth=0.25)

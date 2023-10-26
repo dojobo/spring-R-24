@@ -1,0 +1,109 @@
+---
+title: "Exercise 3.1 Distributions, scatter plots, and bar charts"
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+editor: visual
+---
+
+## Attach packages
+
+Let's attach the `tidyverse` package, but first, add a line of code to also attach `palmerpenguins`.
+
+```{r}
+#| label: chunk1
+library(tidyverse)
+```
+
+## Histograms
+
+Suppose we are interested in the `bill_depth_mm` variable of `penguins`.
+
+We can plot a histogram of any vector in base R using the `hist()` function. In chunk2, use `hist()` to make a histogram of `penguins$bill_depth_mm`.
+
+```{r}
+#| label: chunk2
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk2-soln
+writeLines(readr::read_file("src/scripts/soln-3.1-c2.R"))
+```
+
+Now let's use ggplot2 for a histogram of the same information. The base plot is already started for you in chunk3; add a `geom_histogram()` layer with an aesthetic mapping `aes()` for body mass.
+
+```{r}
+#| label: chunk3
+ggplot(penguins)
+```
+
+*Check answer:*
+
+```{r} 
+#| label: chunk3-soln 
+writeLines(readr::read_file("src/scripts/soln-3.1-c3.R"))
+```
+
+Modify your last plot (copy-paste the code down) and set a bin width of 0.25.
+
+```{r}
+#| label: chunk4
+
+```
+
+*Check answer:*
+
+```{r} 
+#| label: chunk4-soln 
+writeLines(readr::read_file("src/scripts/soln-3.1-c4.R"))
+```
+
+## Scatter plots
+
+The base R function `plot()` can plot two continuous vectors as a scatter. Try it to compare `penguins$bill_length_mm` and `penguins$bill_depth_mm`.
+
+```{r}
+#| label: chunk5
+
+```
+
+*Check answer:*
+
+```{r} 
+#| label: chunk5-soln 
+writeLines(readr::read_file("src/scripts/soln-3.1-c5.R"))
+```
+
+Now let's use ggplot2 for a histogram of the same information. In chunk6, use a `geom_point()` layer with aesthetic mappings for `bill_depth_mm` and `bill_length_mm`.
+
+```{r}
+#| label: chunk6
+
+```
+
+*Check answer:*
+
+```{r} 
+#| label: chunk6-soln 
+writeLines(readr::read_file("src/scripts/soln-3.1-c6.R"))
+```
+
+## Bar charts
+
+Make a bar chart (`geom_bar()`) showing how many observations were made for each island.
+
+```{r}
+#| label: chunk7
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk7-soln
+writeLines(readr::read_file("src/scripts/soln-3.1-c7.R"))
+```
+
