@@ -116,11 +116,26 @@ names(penguins)
 
 # Inference and hypothesis testing
 
+## Frequency distributions
+
+::: columns
+::: {.column width="50%"}
+-   In statistics we want to estimate parameters of the *population* using observed *samples*
+-   In frequentist or parametric statistics, we assume that the population distribution can be approximated with standard forms such as the Gaussian (normal) distribution
+:::
+
+::: {.column width="50%"}
+![A variety of distributions. Image source: [Geeks for Geeks](https://www.geeksforgeeks.org/frequency-distribution/)](images/Frequency-Distribution-Curve-1.png){fig-align="center"}
+:::
+:::
+
 ## Distribution functions
 
 ::: columns
 ::: {.column width="50%"}
 ```{r}
+#| eval: true
+#| echo: false
 ggplot(data.frame(x = c(-4, 4)), aes(x = x)) + 
   stat_function(fun=dnorm) +
   labs(title = "N(0, 1)")
@@ -142,7 +157,7 @@ All have `mean` and `sd` arguments.
 ## Distributions
 
 | Distribution           | Name in functions | Example function | Applications                                              |
-|-----------------|-----------------|-----------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
 | Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
 | Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
