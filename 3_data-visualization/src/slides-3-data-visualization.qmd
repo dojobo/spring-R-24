@@ -3,6 +3,7 @@ title: "Data Visualization"
 subtitle: "Fall R '23"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
+  docx: default
   revealjs:
     self-contained: true
     footer: "R 3: Data Visualization"

@@ -5,7 +5,7 @@ author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:
     self-contained: true
-    footer: "R 5: Machine Learnin Intro"
+    footer: "R 5: Machine Learning Intro"
     logo: "images/ULS_logo1.png"
     code-copy: true
 editor: visual
@@ -24,6 +24,14 @@ library(e1071)
 ```
 
 ## Agenda {.smaller}
+
+1.  What is machine learning?
+2.  Supervised learning
+    -   Regression, $K$-nearest neighbors, decision trees...
+3.  Model assessment
+4.  Unsupervised learning
+    -   Principal component analysis, $K$-means clustering
+5.  Reinforcement learning: learning with rewards
 
 ## About the trainer {.smaller}
 
@@ -65,18 +73,17 @@ Support areas and interests:
 
 ![](images/r-office-hour-fall-23.png){fig-alt="Advertisement for the R Drop-in Hour service" fig-align="center"}
 
-## Today's packages
+## Today's packages {.smaller}
 
 ::: columns
 ::: {.column width="50%"}
-`tidymodels`, particularly:
-
--   `broom`: tidy model representation
--   `parsnip`: standardized modeling interface
+`tidymodels`, particularly `parsnip`: standardized modeling interface
 
 ```{r}
-install.packages(c("tidymodels", "infer"))
+install.packages(c("tidymodels", "e1071"))
 ```
+
+💡 In terms of writing code, there are a variety of approaches to modeling in R, even for fitting the same type of model (e.g., when implemented by different package developers). We will favor the tidymodels approach.
 :::
 
 ::: {.column width="50%"}
@@ -95,74 +102,33 @@ data(penguins)
 names(penguins)
 ```
 
-```{r}
-#| eval: true
+# What is machine learning?
 
+## What is machine learning? {.smaller}
 
-```
+-   Using the computer to learn from data (yes, it is that simple)
+-   Applies **statistics** (finding information in data) and **computer science** (algorithmic design and implementation)
+-   Not quite equivalent to AI; AI is built on ML
+    -   Historically speaking, AI dates back to 1950s and aims to emulate human cognition and behavior, while ML originates in finding insights in data
+    -   The two have converged because ML are the instruments used to approach AI
+    -   Ex. an AI which "sees" subjects in an image, is in fact deploying ML methods that parse the image into regions/forms of interest, then classify the form into some category, based on what has been seen and categorized before. Roughly speaking, each component of this process corresponds to an ML algorithm.
 
-# What is Machine Learning?
-
-## Machine learning
-
-Combines Computer Science and Statistics to analyze data in a variety of ways
-
-Often involves fitting a model to "training data"; the model is then validated against "test data" (partitioned prior to fitting)
-
-⚠ But not all ML methods can be "validated" (see: unsupervised methods)
-
-A model may built and run once to form an analysis; or the model may be embedded in a larger software package where it continually generates predictions/classifications from new data
-
-May be applied in "generative" settings such as a chat bot
-
-## 
-
-![A widely adopted conceptual framework of data science competencies, illustrating where ML fits. Image source: Andrew Silver, ["The Essential Data Science Venn Diagram"](https://towardsdatascience.com/the-essential-data-science-venn-diagram-35800c3bef40) (2018)](images/silver-venn.jpg){fig-align="center"}
-
-Definitions
-
-Applications
-
-## Trends you'll see in ML {.smaller}
-
--   Validation ("training" and "test" sets), iteration, randomness, and model selection
--   Resampling methods (bootstrap)
--   High-dimensional data (many predictors/columns), e.g, genetic data
-    -   "Curse of dimensionality": regression fails in $p$-dimensional space as $p$ (number of predictors) approaches and surpasses $n$, because the space is too sparsely populated to avoid overfitting.
--   Accuracy/Explainability tradeoff
--   Many ML methods require a large sample size, compared to classical statistics; methods (as currently practiced) tend to be more naive compared to domain-embedded statistics, but may also leverage compute to a much greater degree
--   "Ensemble methods" which combine many simple models to form a single, powerful model
--   Application of Occam's Razor (simplest is best) when confronted with similar results from different models
--   ML "black box" methods can be useful for exploration even if they cannot always answer research questions
-
-## 
-
-![The Curse of Dimensionality. Note the number of total regions in each space and the relative sparseness of the 3D space ($p$ = 3) with $n$ = 7 observations. Image source: [Thudumu et al. 2020](https://doi.org/10.1186/s40537-020-00320-x)](images/dimensionality.jpg){fig-align="center"}
-
-## Common ML problem applications
-
--   Prediction: based on what we've seen before, what $\hat{Y}$ do we predict from $X_1 … X_p$ inputs?
-    -   Note: As in classical statistics, may also be used for inference/explanation rather than prediction (what are the covariate relationships in the observed data?)
--   Classification: based on what we've seen before, what kind of thing is this?
--   Clustering: looking at the data, what clusters exist?
--   Dimension reduction: how can I reduce the number of predictors, while minimizing the information lost?
--   Anomaly detection: what is unusual? (important for medical settings!)
--   Semantic analysis: what does this mean? (e.g., text analysis, computer vision)
--   Predictive media generation
-
-## ML terminology
+## ML (and statistics) terminology {.smaller}
 
 Often describes statistical concepts with different language, due to separate disciplinary traditions.
 
 | Statistics term                       | ML / Computer Science term              |
 |-----------------------------------|-------------------------------------|
-| observation                           | example, instance                       |
+| observation, case                     | example, instance                       |
 | response variable, dependent variable | label, output                           |
-| predictor, independent variable       | feature, input                          |
+| predictor, independent variable       | **feature**, input                      |
 | regression                            | regression, supervised learner, machine |
 | estimation                            | learning                                |
+| outlier                               | anomaly                                 |
 
 : Some terminology encountered in ML and statistics. Source: Adapted from Zachary Kurtz, ["Translating Between Statistics and Machine Learning"](https://insights.sei.cmu.edu/blog/translating-between-statistics-and-machine-learning/) (2018)
+
+## Terminology caveats
 
 ⚠ Terms/concepts to be careful with in ML, coming from stats:
 
@@ -170,137 +136,140 @@ Often describes statistical concepts with different language, due to separate di
 -   bias (broader meaning)
 -   causality (sometimes less rigorous than stats)
 
-## Major ML approaches {.smaller}
+# Supervised learning
 
--   **Supervised learning**: predictive; there is a $Y$ (output)
-    -   ("Supervised" because we can *supervise* the process with a target, and assess the model's accuracy)
-    -   **Regression**, e.g., (multiple) linear, logistic, polynomial, splines
-    -   **Decision trees** and random forests
-    -   Linear discriminant analysis (LDA), a classifier which fits a linear boundary
-    -   **Naive Bayes classifier**
-    -   Support vector machines (SVMs), binary classifiers with nonlinear class boundaries
-    -   Artificial neural networks (ANNs), which are *deep learning* when sufficiently layered
--   **Unsupervised learning**: there is no response $Y$ (output) against which to validate; exploratory
-    -   Clustering techniques
-    -   Probability density estimation (i.e., inferring distribution)
-    -   Principal Components Analysis (PCA), a dimensionality reducing method
--   Reinforcement learning: the model receives positive/negative feedback to outputs and learns accordingly
+## Term review: regression and classification {.smaller}
 
-We will take a closer look at the ones in bold.
+::: columns
+::: {.column width="50%"}
+**Regression**
 
-\[VISUAL\]
+-   Understand a **numeric / continuous variable**'s relationship to one or more predictors
+-   or, Predict some numeric / continuous value from observations
+-   "[How tall]{.underline} ($y$) will my plant be if I give it $x$ amount of water?"
+:::
 
-# Regression
+::: {.column width="50%"}
+**Classification**
 
-## Linear regression
+-   Understand a **categorical variable**'s relationship to one or more predictors
+-   or, Predict some numeric / continuous value from observations
+-   "[What kind]{.underline} of seeds ($y$) did I plant if the current height is $x$?"
+:::
+:::
 
-Linear regression can answer: (James et al. 2021)
+## Supervised learning {.smaller}
 
-1.  Is there a relationship between $\beta_{1...p}$ and $Y$?
+Supervised learning has a predictive output or target (regression or classification of a variable). A model is fit which predicts (or retrodicts) some $y$ from one or more $x$.
 
-2.  How strong is the relationship?
+-   Regression (esp. linear and logistic)
+-   $K$-Nearest Neighbors classifier
+-   Decision trees
+-   Support vector machines (SVM)
+-   Naive Bayes classifier
+-   Linear discriminant analysis (LDA)
+-   Neural networks (incl. deep learning)
 
-3.  Which subgroups have the strongest relationship?
+## Regression {.smaller}
 
-4.  How accurately can we predict future $Y$ from future $\beta_{1...p}$?
+::: columns
+::: {.column width="60%"}
+-   Plot a scatterplot of $x$ and $y$, then fit a line through it.
+-   We want to solve the equation $y = mx + b$, where $m$ is the slope of the line of best fit, and $b$ is the $y$-intercept. $x$ is an independent or *predictor* variable, and $y$ is a dependent or *response* variable.
+    -   Stats notation: $Y = \beta_0 + \beta_1X + \epsilon$
+-   A positive or negative slope corresponds to a positive or negative relationship (respectively) between $x$ and $y$. The steeper the slope, the stronger the relationship.
+-   *Simple* linear regression uses only two continuous variables and a straight line. Multiple regression may have several $X_2...X_p$.
+:::
 
-5.  Is the relationship linear?
+::: {.column width="40%"}
+![Image source: Berland via Wikimedia Commons (public domain)](images/LinearRegression.svg){fig-align="center"}
+:::
+:::
 
-6.  Are there interaction effects among $\beta_{1…p}$?
+## 
 
-## Multiple linear regression {.smaller}
+![Animation of the least-squares method of fitting a linear regression. Data points are red, and their residuals (distance to the regression) are dotted gray lines. The mathematical goal in least-squares fitting is to minimize the sum of squared residuals. Image source: Stephen1729 via Wikimedia Commons (CC BY-SA 3.0)](images/Least_Squares.gif){fig-align="center"}
 
-$$
-Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + ... + \beta_pX_p + \epsilon
-$$
+## 
 
-We are trying to estimate each of the $\hat{\beta}_0...\hat{\beta}_p$ coefficients for the above model. While simple linear regression, $p$ = 2, is on a 2D plane, the multiple linear regression is in a $p$-dimensional space.
+::: columns
+::: {.column width="50%"}
+![Example of a logistic regression, which predicts a probability between two outcomes. The logistic regression is widely used a binomial classifier. Image source: Canley via Wikimedia Commons (CC BY-SA 4.0)](images/Exam_pass_logistic_curve.svg)
+:::
 
-We still use the `lm()` function, adding more predictors with `+` . Given a factor (qualitative variable), dummy variables will be created automatically.
+::: {.column width="50%"}
+![Visualization of a multiple linear regression in three dimensions, resulting in a regression plane. Image source: Christa Dawson, "Understanding Multiple Linear Regression"](images/multiple-linear-regression.png)
+:::
+:::
 
-```{r}
-data(penguins)
-p_bill_fit <- linear_reg() %>% 
-  set_engine("lm") %>% 
-  fit(bill_length_mm ~ body_mass_g + flipper_length_mm + bill_depth_mm, 
-      data = penguins)
-summary(p_bill_fit$fit)
+## $K$-Nearest Neighbors classifier {.smaller}
 
-# with factors; note dummy variables in summary:
-p_bill_fit <- linear_reg() %>% 
-  fit(bill_length_mm ~ body_mass_g + flipper_length_mm + bill_depth_mm + species + sex,
-      data = penguins)
-summary(p_bill_fit$fit)
-```
+-   An observation of interest is compared to its $K$ nearest neighbors in $p$-dimensional space.
+    -   $K$ is the tuning parameter, chosen by the analyst
+    -   The observation is classified according to the majority of its neighbors
 
-## Writing formulas in R
+![Pt is an observation of unknown category, which we would like to classify. The K nearest neighbors (K = 7 here) are found using a distance function, and the majority class of those neighbors is assigned to Pt. The result would be Class ii in this case. Image source: Atallah, Badawy, and El-Sayed 2019](images/knn.png){fig-align="center"}
 
-`bill_length_mm ~ body_mass_g` is an example of a **formula** in R.
+## 
 
-```{r}
-?formula
-```
+![Choice of K has a great effect on the decision boundary (black line). K = 1 will overfit, but K = 100 is far too generalized in this case. The dashed purple line compares a Bayesian classifier fit. Image source: James et al. 2021](images/knn-100.png){fig-align="center"}
 
-## Logistic regression
+## Decision trees {.smaller}
 
-We assign the two levels of a binomial factor to a probability space, where 0 is level A of a factor, and 1 is level B of a factor. Then we a fit a model (often linear). For some $X$, $Y$ is ultimately interpreted as either 0 or 1, depending on whether the probability lies above or below 0.5.
+-   We *stratify* the predictor space using *splitting rules*
+    -   *Recursive binary splitting*:\
+        select the $X$ most correlated with $Y$ $\rightarrow$\
+        find a good "cut point" (decision boundary) to split the data, according to $Y$ $\rightarrow$\
+        in the two resulting bins, the process is repeated, and so on, until a stop condition is reached.
+-   May be used for classification but also regression
+-   Very explainable, but "typically are not competitive with the best supervised learning methods" in terms of accuracy (James et al. 2021); also not very robust on their own
+    -   Methods like *random forests*, *bagging*, and *boosting* extend the decision tree algorithm and address issues of accuracy and robustness
 
-```{r}
-penguins_clean <- penguins %>% 
-  filter(species %in% c("Gentoo", "Adelie"),
-         !is.na(species),
-         !is.na(body_mass_g)) %>% 
-  mutate(species = fct_drop(species))
-species_fit <- logistic_reg() %>% 
-  set_engine("glm") %>% 
-  fit(species ~ body_mass_g, data = penguins_clean)
-summary(species_fit$fit)
+## 
 
-ggplot(penguins_clean, aes(x=body_mass_g, y=species)) + geom_point() + 
-  geom_line(aes(y=predict(species_fit$fit)), color="blue") +
-  coord_cartesian(ylim=c(1, 2))
+![Animation of a simple decision tree example. Each binary branch in the tree on the left corresponds to a partitioning in the x-y space. The response variable (output) of this model is gray/green color classification. Image source: Algobeans](images/decision-tree-tutorial-animated3.gif){fig-align="center"}
 
-```
+## 
 
-# Decision trees
+![Image source: James et al. 2021](images/decision-tree.png){fig-align="center"}
 
-## Decision trees
+## Support vector machines (SVM) {.smaller}
 
--   Segment the predictor space into regions with if/else boundaries
--   To predict: return mean/mode response $Y$ for the region of which $X$ is a member
--   👍 Very interpretable, but 👎 tend to be less accurate than regression methods
--   *Random forests* and similar methods build and prune very many decision trees randomly and then form a single model, improving accuracy and mitigating overfitting
--   May be used for classification or regression; non-parametric
+::: columns
+::: {.column width="40%"}
+Classifier which fits a *hyperplane*. The hyperplane forms the categorical or decision boundary; observations in the boundary region are *support vectors* pushing against the hyperplane across a distance called the *margin*
 
-```{r}
-library(palmerpenguins)
-data(penguins)
-library(tidyverse)
-library(tidymodels)
-library(rpart.plot) 
+The *margin* between support vectors and hyperplane may need to be a *soft margin* because of overlapping class regions (i.e., observations are mixed)
+:::
 
+::: {.column width="60%"}
+![Support vector classifier. Image source: Rani et al. 2022](images/sv-classifier.jpg){fig-align="center"}
+:::
+:::
 
-```
+## 
 
-# Naive Bayes classifier
+![Support vector classifier with four different values for the tuning parameter C. As C gets smaller, the tolerance for observations on the "wrong" side decreases, and margins therefore decrease accordingly. Image source: James et al. 2021](images/sv-classifier-c.png){fig-align="center"}
 
-## Naive Bayes classifier {.smaller}
+## 
 
-Uses Bayes' theorem
+![Support vector machines extend the support vector classifier to use non-linear kernels. The data in this figure would fit a poor linear model using the linear classifier. Image source: James et al. 2021](images/svm-nonlinear.png){fig-align="center"}
 
-$$
-Pr(Y = k|X = x) = \frac{\pi_kf_k(x)}{\sum^K_{l=1} \pi_lf_l(x)}
-$$
+## Naive Bayes classifier
 
-where $\pi_k$ is the overall *prior* probability that an observation comes from $k$ class, and $f_k$ is the density function. In estimating $f_1(x),...,f_K(x)$, we assume only: ***Within the kth class, the p predictors are independent*****.** For $k = 1,…,K$,
+-   We assume that each predictor variable has a normal (Gaussian) distribution
+    -   For each variable, the distribution is estimated based on observed data
+    -   To classify an observation, plot it and check its probability of membership for each class.
 
-$$
-f_k(x) = f_{k1}(x_1) \times f_{k2}(x_2) \times ... \times f_{kp}(x_p)
-$$
+## 
 
-Density estimation is simply treated as Gaussian for each predictor. These are probably unrealistic assumptions---hence *naive*---but such models nevertheless return "decent" results (James et al. 2021) without the challenges of estimating joint distributions.
+![Animation of the naive Bayes classifier. Color intensity indicates probability of group membership. Image source: Jacopo Bertolotti via Wikimedia Commons (CC0)](images/Naive_Bayes_Classifier.gif){fig-align="center"}
 
-The classifier model calculates a probability, which it then uses to assign a class (i.e., output factor level) according to a threshold (tuneable for application).
+## Naive Bayes paper examples
+
+-   Predicting water quality ([Ilic et al. 2022](https://doi.org/10.2166/wst.2022.006))
+
+## Naive Bayes code example
 
 ```{r}
 penguins_clean <- penguins %>% 
@@ -315,14 +284,113 @@ species_fit
 predict(species_fit, data.frame(body_mass_g=3500, flipper_length_mm=22))
 ```
 
-## Model *responsibly* {.smaller}
+## Neural networks {.smaller}
 
--   Consider the validity and reliability of your measures
--   Correlation $\neq$ causation
--   Always keep in mind the assumptions made by your chosen method/model
--   Beware bias and overfitting
--   Seek explainability (AKA interpretability), not merely predictive accuracy
--   Remember the Data Science Danger Zones! 💀 (computers are not magic)
+-   A neural network takes $X_1…X_p$ variables and builds a nonlinear $f(X)$ to predict the response $Y$ (James et al. 2021)
+-   Derived features are computed and utilized by *hidden layers*, between the input and output; nodes have different rules for *activating*
+-   When there is more than one hidden layer, it is called *deep learning*
+-   **This is the black box method**: very sophisticated, but little or no explainability for an individual given result
+
+## 
+
+![Image source: James et al. 2021](images/neural-network-1.png){fig-align="center"}
+
+## 
+
+::: columns
+::: {.column width="50%"}
+![Images source: James et al. 2021](images/neural-network-2.png){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![](images/cnn.png){fig-align="center"}
+:::
+:::
+
+## 
+
+![Animation demonstrating a neural network for handwriting identification. Note that only certain nodes activate. The class (i.e., Arabic numeral) predicted from the input is "2". Image source: Suraj Yadav](images/cnn-handwriting.gif){fig-align="center"}
+
+## Model assessment {.smaller}
+
+-   There are many tools and possible implementations of supervised methods
+-   "More data" in the model isn't automatically better (e.g., can create bias with highly correlated variables)
+-   Validation
+    -   Prior to analysis, data are split into *training* and *test* sets
+    -   The model is fit on the training data
+    -   Then the test data are submitted to the model, and the test $Y$ is compared to the model's $\hat{Y}$ prediction---a measure of accuracy (was the model right?)
+-   Cross-validation: a more sophisticated take
+-   *Feature selection* is also an important activity, informed by validation as well as techniques such as lasso regression
+
+# Unsupervised learning
+
+## Unsupervised learning
+
+Unsupervised learning has no predictive model: instead it finds previously unknown structure in the data. All variables or features of the data are considered together.
+
+Unsupervised learning tends to be most useful for exploratory data analysis, i.e., prior to having a goal for regression or classification.
+
+-   Principal Components Analysis (PCA): dimensionality reduction
+-   $K$-Means Clustering
+
+## Principal Component Analysis (PCA) {.smaller}
+
+-   $X_1, X_2,…,X_p$ features are reduced to a small number of "principal components"
+    -   $Z_1$, the first principal component, accounts for most of the variation in the data
+    -   $Z_2$ accounts for most of the remaining variation
+-   Example of **dimensionality reduction** 🤏
+-   Useful for:
+    -   understanding
+    -   deriving variables for supervised methods
+    -   visualizing 3+ variables in a 2D space
+    -   imputation (guessing empty values)
+-   Similar to Linear Discriminant Analysis (LDA), a supervised method which incorporates dimensionality reduction among predictors
+
+## 
+
+![Animation demonstrating projection of two features onto a single histogram using principal components analysis. Image source: Amélia O. F. da S. via Wikimedia Commons (CC BY-SA 4.0)](images/PCA_Projection_Illustration.gif){fig-align="center"}
+
+## 
+
+![Image source: James et al. 2021](images/pca-3d.png){fig-align="center"}
+
+## PCA examples
+
+-   Characterizing how people perceive themselves in a mirror versus looking at their own body ([Jenkinson and Preston 2017](https://doi.org/10.1016/j.concog.2016.12.007))
+-   Diagnosis of diverse diseases from blood microRNA datasets ([Sell et al. 2020](https://doi.org/10.1371/journal.pone.0234185))
+
+## $K$-Means Clustering {.smaller}
+
+-   A number $K$ of previously unknown clusters are identified; or: we partition the data into $K$ clusters
+    -   $K$ is chosen by the analyst
+    -   Clusters aren't completely random, but based on similarities in the data
+    -   Assign every observation a number 1 through $K$ $\rightarrow$\
+        calculate each cluster centroid $\rightarrow$\
+        (re)assign each observation to the closest centroid $\rightarrow$\
+        continue calculating and reassigning until movement stops
+    -   Total within-cluster variation is minimized
+-   *Not* a predictive classifier!
+-   Useful for:
+    -   Exploration
+    -   Identifying potential subpopulations
+
+## 
+
+![Animation of the K-means algorithm in action. After initial random group assignment, centroids are randomly placed and used to classify. Then centroids and assignment are iteratively adjusted until movement stops. Image source: Chire on Wikimedia Commons (CC BY-SA 4.0)](images/K-means_convergence.gif){fig-align="center"}
+
+## 
+
+![150 observations in 2D space, clustered according to different values of K. Prior to clustering, data are not categorized. Colors indicate which group each observation is assigned to by the model. Image source: James et al. 2021](images/k-means.png)
+
+## K-Means examples
+
+-   Identifying patients at risk for paternal age-related schizophrenia ([Lee et al. 2011](https://doi.org/10.1016/j.schres.2011.02.006))
+
+## Reinforcement learning
+
+-   A supervised model is connected to an assessment apparatus
+-   Model outputs are scored for correctness (e.g., by a human reviewer)
+-   The model is programmed to seek optimization of this score and may adjust its own machinery to get "better" results
 
 ## Recommended reading
 
@@ -352,10 +420,17 @@ Look up your discipline (or some topic that interests you, e.g., time series dat
 
 [![Example graphic of a recent update](images/big-book.png){fig-align="center"}](https://www.bigbookofr.com/)
 
-# Wrap up
+# Concluding thoughts {.smaller}
 
-## Session in review
+::: columns
+::: {.column width="55%"}
+-   Every approach makes certain assumptions and tradeoffs
+    -   Bias--variance tradeoff: two sources of error; having a model that is not overfit to the data nor too general
+    -   Consider accuracy vs. explainability ("performance vs. complexity")
+-   Experiment, but don't jump to conclusions. Consult your discipline's literature. Look for alternative ways to explore and validate unexpected findings.
+:::
 
-Today we learned about:
-
--   what machine learning is, esp. relative to familiar concepts
+::: {.column width="45%"}
+![A common conceptualization in the (applied) ML community. Image source: Herm et al. 2023](images/explainability-vs-performance.jpg){fig-align="center"}
+:::
+:::
