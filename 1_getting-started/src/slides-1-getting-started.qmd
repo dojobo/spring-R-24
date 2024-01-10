@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with Tabular Data"
-subtitle: "Fall R '23"
+subtitle: "Spring R '24"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:
@@ -46,15 +46,15 @@ Support areas and interests:
 :::
 :::
 
-## Fall R Series
+## Spring R Series
 
 | \#  | Date | Title                             |
 |-----|------|-----------------------------------|
-| 1   | 8/29 | Getting Started with Tabular Data |
-| 2   | 9/5  | Working with Data Frames          |
-| 3   | 9/12 | Data Visualization                |
-| 4   | 9/19 | Inference and Modeling Intro      |
-| 5   | 9/26 | Machine Learning Intro            |
+| 1   | 2/22 | Getting Started with Tabular Data |
+| 2   | 2/29 | Working with Data Frames          |
+| 3   | 3/7  | Data Visualization                |
+| 4   | 3/21 | Inference and Modeling Intro      |
+| 5   | 3/28 | Machine Learning Intro            |
 
 ## What to expect {.smaller}
 
@@ -63,7 +63,6 @@ Support areas and interests:
     -   Some lecturing with slides
     -   Practice with hands-on Exercises; work in couples/groups (recommended) or independently
 -   You/we might not finish all the exercises in the allotted time; that's OK.
--   There is no homework *per se*, but I suggest to practice applying what we learn to your own data between sessions. I also plan to share suggested reading for each session.
 
 # Thinking about data
 
@@ -124,7 +123,7 @@ In this course, we are working with string data---interpreted as numeric values 
 ::: {.column width="40%"}
 -   Import data from file and online sources
 -   Explore, clean, reformat, and combine data
--   Perform calculations and analyses on data, especially using statistical methods
+-   Perform calculations and analyses on data, using statistical and/or machine learning (ML) methods
 -   Visualize data
 -   Present information in a variety of formats (documents, Web, etc.)
 -   Build a dashboard or other web app, especially interacting with tabular data
@@ -134,6 +133,15 @@ In this course, we are working with string data---interpreted as numeric values 
 ![Research Data Lifecycle; source: [Princeton Research Data Service](https://researchdata.princeton.edu/research-lifecycle-guide/research-lifecycle-guide)](images/data-lifecycle.png){fig-alt="A diagram of the research data life cycle. Steps: Plan, Acquire, Process, Analyze, Preserve, Share Results, Discover & Re-Use" fig-align="center"}
 :::
 :::
+
+## Example analyses {.smaller}
+
+Here is a (very small) sampling of papers that use analytic methods which are available in R.
+
+-   Measuring chlorophyll and phosphorus at multiple points in Lake Erie to understand algal bloom patterns; Bayesian network ([Rowland et al. 2019](https://doi.org/10.1021/acs.est.9b05326))
+-   Characterizing how people perceive themselves in a mirror versus looking at their own body; Principal Components Analysis ([Jenkinson and Preston 2017](https://doi.org/10.1016/j.concog.2016.12.007))
+-   Identifying patients at risk for paternal age-related schizophrenia; K-Means clustering ([Lee et al. 2011](https://doi.org/10.1016/j.schres.2011.02.006))
+-   Modeling chemical properties of constituents in a mixture using molecular simulation; simulation and multiple linear regression ([Josephson et al. 2019](https://doi.org/10.1080/00268976.2019.1648898))
 
 ## Why I prefer R {.smaller}
 
