@@ -1,6 +1,6 @@
 ---
 title: "Working with Data Frames"
-subtitle: "Fall R '23"
+subtitle: "Spring R '24"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:

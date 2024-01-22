@@ -1,0 +1,75 @@
+---
+title: "Exercise 2.2 Data"
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+editor: visual
+---
+
+## Attach packages
+
+Run the chunk directly below to attach the `tidyverse` and `palmerpenguins` packages.
+
+```{r}
+#| label: chunk1
+library(tidyverse)
+library(palmerpenguins)
+```
+
+palmerpenguins gives us access to the `penguins` data frame. In the chunk below, run `data(penguins)` to make the data frame object appear in your Environment pane listing. Then examine the data frame to answer these questions, using the RStudio graphical tools and/or writing code:
+
+-   How many rows (observations) does `penguins` have? (Hint: `?nrow`)
+-   How many variables (columns) does `penguins` have, and what are their names? (Hint: `?ncol`, `?names`)
+
+```{r}
+#| label: chunk2
+
+# your code here
+
+```
+
+*Check answer: (run chunk and compare code to yours)*
+
+```{r}
+#| label: chunk2-soln
+writeLines(readr::read_file("src/scripts/soln-2.2-c2.R"))
+```
+
+## Manipulate a data frame
+
+How many Gentoo penguins are there in the dataset? How many Adelie? (Hint: `dplyr::filter()`)
+
+```{r}
+#| label: chunk3
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk3-soln
+```
+
+How many female penguins were observed on Dream island?
+
+```{r}
+#| label: chunk4
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk4-soln
+```
+
+Sort the penguin observations by body weight descending. How much did the heaviest penguin way? What species and sex were they?
+
+```{r}
+#| label: chunk5
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk5-soln
+```
