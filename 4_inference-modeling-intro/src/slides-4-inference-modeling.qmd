@@ -24,7 +24,7 @@ library(tidymodels)
 library(infer)
 ```
 
-## Agenda {.smaller}
+## Agenda
 
 1.  Inference and hypothesis testing
     1.  Distribution functions
@@ -56,20 +56,6 @@ Support areas and interests:
 -   Research methods; science and technology studies
 :::
 :::
-
-## Fall R Series
-
-| \#    | Date     | Title                             |
-|-------|----------|-----------------------------------|
-| 1     | 8/29     | Getting Started with Tabular Data |
-| 2     | 9/5      | Working with Data Frames          |
-| 3     | 9/12     | Data Visualization                |
-| **4** | **9/19** | **Inference and Modeling Intro**  |
-| 5     | 9/26     | Machine Learning Intro            |
-
-## 
-
-![](images/r-office-hour-fall-23.png){fig-alt="Advertisement for the R Drop-in Hour service" fig-align="center"}
 
 ## Today's packages
 
@@ -157,7 +143,7 @@ All have `mean` and `sd` arguments.
 ## Distributions
 
 | Distribution           | Name in functions | Example function | Applications                                              |
-|-----------------|-----------------|-----------------|---------------------|
+|-----------------|-----------------|-----------------|--------------------|
 | Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
 | Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
 | Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
