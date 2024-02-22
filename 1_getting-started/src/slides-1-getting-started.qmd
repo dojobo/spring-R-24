@@ -48,20 +48,20 @@ Support areas and interests:
 
 ## Spring R Series
 
-| \#  | Date | Title                             |
-|-----|------|-----------------------------------|
-| 1   | 2/22 | Getting Started with Tabular Data |
-| 2   | 2/29 | Working with Data Frames          |
-| 3   | 3/7  | Data Visualization                |
-| 4   | 3/21 | Inference and Modeling Intro      |
-| 5   | 3/28 | Machine Learning Intro            |
+| \#       | Date     | Title                                 |
+|----------|----------|---------------------------------------|
+| **1** ⭐ | **2/22** | **Getting Started with Tabular Data** |
+| 2        | 2/29     | Working with Data Frames              |
+| 3        | 3/7      | Data Visualization                    |
+| 4        | 3/21     | Inference and Modeling Intro          |
+| 5        | 3/28     | Machine Learning Intro                |
 
 ## What to expect {.smaller}
 
 -   I strongly don't believe in "sink or swim" or the weed-out mentality---reach out if you need help!
 -   How will we use our time?
     -   Some lecturing with slides
-    -   Practice with hands-on Exercises; work in couples/groups (recommended) or independently
+    -   Practice with hands-on Exercises; work in couples/groups (suggested) or independently
 -   You/we might not finish all the exercises in the allotted time; that's OK.
 
 # Thinking about data
@@ -72,20 +72,22 @@ Support areas and interests:
 
 -   string or character-based data
     -   viewable/editable in a text processor
-    -   may consist of plain text or specially encoded information (markup languages, tabular formats)
+    -   may consist of plain text, or specially encoded information (markup languages, **tabular** formats---"structured data")
 -   image, audio, video, and sensor data
     -   requires additional layers of software for viewing and editing
     -   various encoding schemes depending on electronic source and desired use case
--   compressed data
-    -   one of the above types with some bits removed
+    -   there is often a processing step to convert some of the information into structured data, for analysis
+-   compressed data (one of the above types, some bits removed)
     -   compression may be "lossy" or "lossless"
     -   decompression may occur on-the-fly (playing an MP3) or may need to be accomplished before consuming data (a zip file)
 
-## Ways to work with data
+## Ways to work with data {.smaller}
 
--   Tabular format -- quantitative, statistical methods
--   Document format (XML) -- qualitative methods
+-   **Tabular format** -- quantitative, statistical methods (R's preference)
+-   Document format (XML) -- usually qualitative methods
 -   Computer vision and audition -- algorithmic processing, deep learning models
+
+Converting from XML or unstructured data to tabular format is popular, because it facilitates statistical analysis. An image containing
 
 In this course, we are working with string data---interpreted as numeric values and pieces of text---in a tabular format.
 
@@ -138,10 +140,44 @@ In this course, we are working with string data---interpreted as numeric values 
 
 Here is a (very small) sampling of papers that use analytic methods which are available in R.
 
--   Measuring chlorophyll and phosphorus at multiple points in Lake Erie to understand algal bloom patterns; Bayesian network ([Rowland et al. 2019](https://doi.org/10.1021/acs.est.9b05326))
--   Characterizing how people perceive themselves in a mirror versus looking at their own body; Principal Components Analysis ([Jenkinson and Preston 2017](https://doi.org/10.1016/j.concog.2016.12.007))
--   Identifying patients at risk for paternal age-related schizophrenia; K-Means clustering ([Lee et al. 2011](https://doi.org/10.1016/j.schres.2011.02.006))
--   Modeling chemical properties of constituents in a mixture using molecular simulation; simulation and multiple linear regression ([Josephson et al. 2019](https://doi.org/10.1080/00268976.2019.1648898))
+::: columns
+::: {.column width="50%"}
+![Measuring chlorophyll and phosphorus at multiple points in Lake Erie to understand algal bloom patterns; Bayesian network ([Rowland et al. 2019](https://doi.org/10.1021/acs.est.9b05326))](images/erie-map.gif){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![Figure 5. Maumee River spring (1 Mar--30 Jul) loads vs lake concentrations for soluble reactive phosphorus (SRP) 2008--2018 in Lake Erie. ...](images/erie-plots.gif){fig-align="center" width="228"}
+:::
+:::
+
+## 
+
+::: columns
+::: {.column width="50%"}
+![Characterizing how people perceive themselves in a mirror versus looking at their own body; Principal Components Analysis. Participants answered several questionnaires about mirror-gazing and about their general mental state. ([Jenkinson and Preston 2017](https://doi.org/10.1016/j.concog.2016.12.007))](images/mirror-1.jpg){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![Fig. 2. Mean (SE) responses to BEQ items. Adjacent bars of the same colour represent responses for the direct (left/stippled colour) and mirror (right/solid colour) views. See Table 2 for item labels (Q1-20).](images/mirror-2.jpg)
+:::
+:::
+
+## 
+
+![Results: Two analyses generated clusters with high concentrations of PARS cases. The first analysis (N= 136; PARS= 34) revealed a cluster containing 83% PARS cases, in which the patients showed a significant discrepancy between verbal and performance intelligence.... The second analysis (N= 123; PARS= 30) revealed a cluster containing 71% PARS cases, of which 93% were females; the mean age of onset of psychosis, at 17.2, was significantly early.\
+Conclusions: These results strengthen the evidence that PARS cases differ from other patients with schizophrenia....These findings provide a rationale for separating these phenotypes from others in future clinical, genetic and pathophysiologic studies of schizophrenia and in considering responses to treatment. ([Lee et al. 2011](https://doi.org/10.1016/j.schres.2011.02.006))](images/schizophrenia.png){fig-align="center"}
+
+## 
+
+::: columns
+::: {.column width="50%"}
+![Modeling chemical properties of constituents in a mixture using molecular simulation; simulation and multiple linear regression ([Josephson et al. 2019](https://doi.org/10.1080/00268976.2019.1648898))](images/chem-1.jpg){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![Figure 2. Parity plots and histograms illustrating the quality of the multilinear regression for the EtOH-rich liquid in the LLE system, with $x^{mathrm{total}}_{\mathrm{H2O}} = 0.1$.](images/chem-2.jpg){fig-align="center"}
+:::
+:::
 
 ## Why I prefer R {.smaller}
 
@@ -173,6 +209,16 @@ Here is a (very small) sampling of papers that use analytic methods which are av
 ❌ R has a smaller (but more focused) community with less published code
 :::
 :::
+
+## Setup
+
+-   **Recommended**: install R and RStudio (Windows, macOS, Linux)
+    -   R: <https://cran.rstudio.com/>
+    -   RStudio Desktop: <https://posit.co/download/rstudio-desktop/>
+-   Cloud-based alternative: Posit Cloud (chromeOS)
+    -   R and RStudio in your web browser---no installation!
+    -   Have to create a account (lowest tier is free)
+    -   <https://posit.cloud/>
 
 # R as a calculator
 
