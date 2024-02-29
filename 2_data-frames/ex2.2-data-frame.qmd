@@ -48,6 +48,7 @@ How many Gentoo penguins are there in the dataset? How many Adelie? (Hint: `dply
 
 ```{r}
 #| label: chunk3-soln
+writeLines(readr::read_file("src/scripts/soln-2.2-c3.R"))
 ```
 
 How many female penguins were observed on Dream island?
@@ -60,9 +61,10 @@ How many female penguins were observed on Dream island?
 
 ```{r}
 #| label: chunk4-soln
+writeLines(readr::read_file("src/scripts/soln-2.2-c4.R"))
 ```
 
-Sort the penguin observations by body weight descending. How much did the heaviest penguin way? What species and sex were they?
+Sort the penguin observations by body weight descending. How much did the heaviest penguin weigh? What species and sex were they?
 
 ```{r}
 #| label: chunk5
@@ -72,4 +74,5 @@ Sort the penguin observations by body weight descending. How much did the heavie
 
 ```{r}
 #| label: chunk5-soln
+writeLines(readr::read_file("src/scripts/soln-2.2-c5.R"))
 ```

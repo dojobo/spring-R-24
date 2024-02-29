@@ -82,7 +82,7 @@ Now, use `read_excel()` to load `data/epi_data.xlsx` as a data frame. Assign the
 writeLines(readr::read_file("src/scripts/soln-2.1-c6.R"))
 ```
 
-## Get a summary 
+## Get a summary
 
 In `chunk7`, use the `names()` function on `epi` to see what columns it has.
 

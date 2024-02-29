@@ -29,6 +29,44 @@ library(readxl)
 5.  [Reshaping (pivoting) data](#reshaping-pivoting-data)
 6.  [Joining (merging) related tables](#joining-merging-related-tables)
 
+## About the trainer {.smaller}
+
+**Dominic Bordelon, Research Data Librarian**\
+University Library System, University of Pittsburgh\
+[dbordelon\@pitt.edu](mailto:dbordelon@pitt.edu)
+
+::: columns
+::: {.column width="50%"}
+Services for the Pitt community:
+
+-   Consultations
+-   Training (on-request and via public workshops)
+-   Talks (on-request and publicly)
+-   Research collaboration
+:::
+
+::: {.column width="50%"}
+Support areas and interests:
+
+-   Computer programming fundamentals, esp. for data processing and analysis
+-   Open Science and Data Sharing
+-   Data stewardship/curation
+-   Research methods; science and technology studies
+:::
+:::
+
+## Spring R Series
+
+| \#       | Date     | Title                             |
+|----------|----------|-----------------------------------|
+| 1        | 2/22     | Getting Started with Tabular Data |
+| **2** ⭐ | **2/29** | **Working with Data Frames**      |
+| 3        | 3/7      | Data Visualization                |
+| 4        | 3/21     | Inference and Modeling Intro      |
+| 5        | 3/28     | Machine Learning Intro            |
+
+##  {.smaller}
+
 # What is working with data frames "about"?
 
 ## Quick review: what is a data frame?
@@ -153,15 +191,11 @@ paste(delta_t_avg, "°C avg. ΔT")
 
 ## Keyboard shortcuts revisited {.smaller}
 
-+------------------------------+--------------------+---------------------+
 | Function                     | Windows            | macOS               |
-+==============================+====================+=====================+
+|------------------------------|--------------------|---------------------|
 | Execute line                 | Ctrl-Enter         | ⌘-Enter             |
-+------------------------------+--------------------+---------------------+
 | Assignment operator **`<-`** | Alt - (Alt-hyphen) | ⌥ - (Option-hyphen) |
-+------------------------------+--------------------+---------------------+
 | Pipe operator **`%>%`**      | Ctrl-Shift-M       | ⌘-Shift-M           |
-+------------------------------+--------------------+---------------------+
 
 ## Exercise 2.1
 
