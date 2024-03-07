@@ -1,6 +1,6 @@
 ---
 title: "Data Visualization"
-subtitle: "Fall R '23"
+subtitle: "Spring R '24"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   docx: default
@@ -61,19 +61,15 @@ Support areas and interests:
 :::
 :::
 
-## Fall R Series
+## Spring R Series
 
-| \#    | Date     | Title                             |
-|-------|----------|-----------------------------------|
-| 1     | 8/29     | Getting Started with Tabular Data |
-| 2     | 9/5      | Working with Data Frames          |
-| **3** | **9/12** | **Data Visualization**            |
-| 4     | 9/19     | Inference and Modeling Intro      |
-| 5     | 9/26     | Machine Learning Intro            |
-
-## 
-
-![](images/r-office-hour-fall-23.png){fig-alt="Advertisement for the R Drop-in Hour service" fig-align="center"}
+| \#       | Date    | Title                             |
+|----------|---------|-----------------------------------|
+| 1        | 2/22    | Getting Started with Tabular Data |
+| 2        | 2/29    | Working with Data Frames          |
+| **3 ⭐** | **3/7** | **Data Visualization**            |
+| 4        | 3/21    | Inference and Modeling Intro      |
+| 5        | 3/28    | Machine Learning Intro            |
 
 ## The ggplot2 package
 
@@ -334,6 +330,8 @@ penguins %>%
   coord_polar("y", start=0) +
   theme_void()
 ```
+
+# Exercise 3.1: Distribution plots, scatter plots, bar plots
 
 # Heat maps of two-way tables
 

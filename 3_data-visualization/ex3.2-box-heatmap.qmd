@@ -1,0 +1,72 @@
+---
+title: "Exercise 3.2 Box plots, heat maps"
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+editor: visual
+---
+
+## 1. Attach tidyverse and load `midwest`
+
+Attach the `tidyverse` package below using the `library()` function. Then use `data()` to load the included `midwest` data set in your environment.
+
+```{r}
+#| label: chunk1
+
+# your code here
+
+```
+
+*Check your solution:*
+
+```{r}
+#| label: chunk1-soln
+writeLines(readr::read_file("src/scripts/soln-3.2-c1.R"))
+```
+
+## 2. Boxplots
+
+How does the distribution of `area` vary across states? Use `geom_boxplot()` below with aesthetic mappings for `state` and `area`.
+
+```{r}
+#| label: chunk2
+
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk2-soln
+writeLines(readr::read_file("src/scripts/soln-3.2-c2.R"))
+```
+
+## 3. 2-way category heatmaps
+
+Let's turn our categorical variables into factors instead of character vectors. The conversion for `state` is already written below. Add equivalent commands for converting `county`, `inmetro`, and `category`. Notice that we are assigning the `mutate()` call back to the dataframe each time, overwriting the old variable with a new one.
+
+```{r}
+#| label: chunk3
+
+midwest <- midwest %>% mutate(state = as_factor(state))
+
+
+```
+
+*Check answer:*
+
+```{r}
+#| label: chunk3-soln 
+writeLines(readr::read_file("src/scripts/soln-3.1-c3.R"))
+```
+
+Following the slides, use `janitor::tabyl()` to make a 2-way table, then visualize it using `geom_tile()`.
+
+```{r}
+#| label: chunk4
+
+
+
+
+```

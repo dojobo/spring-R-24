@@ -1,1 +1,1 @@
-plot(penguins$bill_length_mm, penguins$bill_depth_mm)
+ggplot(midwest) + geom_histogram(aes(x=area), binwidth = 0.01)

@@ -1,3 +1,2 @@
-penguins %>% 
-  ggplot(aes(x = island)) +
-  geom_bar()
+ggplot(midwest) +
+  geom_point(aes(x = percprof, y = percchildbelowpovert))
