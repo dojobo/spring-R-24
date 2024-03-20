@@ -1,6 +1,6 @@
 ---
 title: "Inference and Modeling Intro"
-subtitle: "Fall R '23"
+subtitle: "Spring R '24"
 author: "Dominic Bordelon, Research Data Librarian, ULS"
 format: 
   revealjs:
@@ -143,7 +143,7 @@ All have `mean` and `sd` arguments.
 ## Distributions
 
 | Distribution           | Name in functions | Example function | Applications                                              |
-|-----------------|-----------------|-----------------|--------------------|
+|------------------|------------------|------------------|--------------------|
 | Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
 | Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
 | Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
@@ -279,6 +279,37 @@ lm(flipper_length_mm ~ bill_length_mm,
 lm_flipper_bill <- lm(flipper_length_mm ~ bill_length_mm, data = penguins)
 ```
 
+## The model object
+
+It is common to assign the output of `lm()` and other modeling functions to an object.
+
+`names(my_model)` tells us the object's attributes, like `coefficients` (the estimated model parameters) and `residuals` (the difference between each observation and the predicted value for that $X$)
+
+```{r}
+#| output: false
+
+lm_flipper_bill <- lm(flipper_length_mm ~ bill_length_mm, data = penguins)
+
+lm_flipper_bill
+names(lm_flipper_bill)
+lm_flipper_bill$coefficients
+lm_flipper_bill$residuals
+summary(lm_flipper_bill)
+```
+
+`plot(my_model)` will give us diagnostic plots about the model. A good discussion about interpreting these plots can be found here: <https://stats.stackexchange.com/questions/58141/interpreting-plot-lm>
+
+```{r}
+plot(lm_flipper_bill)
+```
+
+Or to plot the estimated line on top of the observations, use `abline(my_model)`:
+
+```{r}
+plot(penguins$bill_length_mm, penguins$flipper_length_mm)
+abline(lm_flipper_bill, col="blue")
+```
+
 ## `predict()` outputs from a model
 
 "For some $x$, what $\hat{y}$ does the model predict?"
@@ -288,23 +319,43 @@ Models in R implement behavior for the `predict()` function, which supplies a da
 💡 `predict()` functions are found in documentation under article names like `predict.lm`, even though the function call is `predict()`.
 
 ```{r}
+#| output: false
+
+# using fitted values
+predict(lm_flipper_bill)
+
 # min to max values, incrementing by 0.5:
 x_range <- data.frame(bill_length_mm = seq(from=min(penguins$bill_length_mm, na.rm=TRUE), to=max(penguins$bill_length_mm, na.rm=TRUE), by=0.5))
 
 predict(lm_flipper_bill, newdata = x_range)
+```
 
-# fitted values
-predict(lm_flipper_bill)
+Plot predicted values:
+
+```{r}
+plot(penguins$bill_length_mm, penguins$flipper_length_mm)
+abline(lm_flipper_bill, col="blue")
+
+# with ggplot 2, I prefer to make the dataframe I want plotted:
+preds_df <- x_range %>% 
+  mutate(pred_flipper = predict(lm_flipper_bill, newdata = x_range))
+
+# notice that we are plotting TWO dataframes, and that the base ggplot object has a NULL data argument! 
+ggplot() +
+  geom_point(data=penguins, 
+             aes(bill_length_mm, flipper_length_mm)) +
+  geom_line(data=preds_df, 
+            aes(bill_length_mm, pred_flipper),
+            color="red")
 ```
 
 ## Tidy modeling: `parsnip`
 
-```{r}
-linear_reg() %>% 
-  set_engine("lm") %>% 
-  fit(flipper_length_mm ~ bill_length_mm, 
-      data = penguins)
+parsnip is a package that gathers many different modeling functions and standardizes them into a common interface/language.
 
+For a simple `lm()` with two estimated parameters, this might be overkill, but it comes in very useful when you start dealing with a variety of modeling functions. Sometimes you may even want to try two different implementations of the same type of model to see how they compare, without needing to relearn/rewrite the syntax. Learn more at <https://parsnip.tidymodels.org/>.
+
+```{r}
 linear_reg() %>% 
   set_engine("lm") %>% 
   fit(flipper_length_mm ~ bill_length_mm, 

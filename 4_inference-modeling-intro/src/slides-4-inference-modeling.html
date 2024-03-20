@@ -1208,7 +1208,7 @@ margin-right: 0; }
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Inference and Modeling Intro</h1>
-  <p class="subtitle">Fall R ’23</p>
+  <p class="subtitle">Spring R ’24</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -1342,10 +1342,10 @@ University Library System, University of Pittsburgh<br>
 <table>
 <caption>Commonly used distributions in the <code>stats</code> package</caption>
 <colgroup>
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 28%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 27%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1505,33 +1505,70 @@ Y = \beta_0 + \beta_1X + \epsilon
 <span id="cb9-5"><a href="#cb9-5"></a>lm_flipper_bill <span class="ot">&lt;-</span> <span class="fu">lm</span>(flipper_length_mm <span class="sc">~</span> bill_length_mm, <span class="at">data =</span> penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+<section id="the-model-object" class="slide level2">
+<h2>The model object</h2>
+<p>It is common to assign the output of <code>lm()</code> and other modeling functions to an object.</p>
+<p><code>names(my_model)</code> tells us the object’s attributes, like <code>coefficients</code> (the estimated model parameters) and <code>residuals</code> (the difference between each observation and the predicted value for that <span class="math inline">\(X\)</span>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>lm_flipper_bill <span class="ot">&lt;-</span> <span class="fu">lm</span>(flipper_length_mm <span class="sc">~</span> bill_length_mm, <span class="at">data =</span> penguins)</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>lm_flipper_bill</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="fu">names</span>(lm_flipper_bill)</span>
+<span id="cb10-5"><a href="#cb10-5"></a>lm_flipper_bill<span class="sc">$</span>coefficients</span>
+<span id="cb10-6"><a href="#cb10-6"></a>lm_flipper_bill<span class="sc">$</span>residuals</span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="fu">summary</span>(lm_flipper_bill)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>plot(my_model)</code> will give us diagnostic plots about the model. A good discussion about interpreting these plots can be found here: <a href="https://stats.stackexchange.com/questions/58141/interpreting-plot-lm" class="uri">https://stats.stackexchange.com/questions/58141/interpreting-plot-lm</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">plot</span>(lm_flipper_bill)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Or to plot the estimated line on top of the observations, use <code>abline(my_model)</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">plot</span>(penguins<span class="sc">$</span>bill_length_mm, penguins<span class="sc">$</span>flipper_length_mm)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">abline</span>(lm_flipper_bill, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="predict-outputs-from-a-model" class="slide level2">
 <h2><code>predict()</code> outputs from a model</h2>
 <p>“For some <span class="math inline">\(x\)</span>, what <span class="math inline">\(\hat{y}\)</span> does the model predict?”</p>
 <p>Models in R implement behavior for the <code>predict()</code> function, which supplies a data frame of input values <span class="math inline">\(X\)</span> and returns a data frame containing corresponding <span class="math inline">\(Y\)</span> values. The input data frame needs variable(s) of the same name(s) as the predictor(s). Or you can omit the data frame and get the fitted values.</p>
 <p>💡 <code>predict()</code> functions are found in documentation under article names like <code>predict.lm</code>, even though the function call is <code>predict()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># min to max values, incrementing by 0.5:</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>x_range <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="fu">min</span>(penguins<span class="sc">$</span>bill_length_mm, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">to=</span><span class="fu">max</span>(penguins<span class="sc">$</span>bill_length_mm, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">by=</span><span class="fl">0.5</span>))</span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="fu">predict</span>(lm_flipper_bill, <span class="at">newdata =</span> x_range)</span>
-<span id="cb10-5"><a href="#cb10-5"></a></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="co"># fitted values</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="fu">predict</span>(lm_flipper_bill)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># using fitted values</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">predict</span>(lm_flipper_bill)</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co"># min to max values, incrementing by 0.5:</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>x_range <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="fu">min</span>(penguins<span class="sc">$</span>bill_length_mm, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">to=</span><span class="fu">max</span>(penguins<span class="sc">$</span>bill_length_mm, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">by=</span><span class="fl">0.5</span>))</span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="fu">predict</span>(lm_flipper_bill, <span class="at">newdata =</span> x_range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plot predicted values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">plot</span>(penguins<span class="sc">$</span>bill_length_mm, penguins<span class="sc">$</span>flipper_length_mm)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">abline</span>(lm_flipper_bill, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3"></a></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co"># with ggplot 2, I prefer to make the dataframe I want plotted:</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>preds_df <span class="ot">&lt;-</span> x_range <span class="sc">%&gt;%</span> </span>
+<span id="cb14-6"><a href="#cb14-6"></a>  <span class="fu">mutate</span>(<span class="at">pred_flipper =</span> <span class="fu">predict</span>(lm_flipper_bill, <span class="at">newdata =</span> x_range))</span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co"># notice that we are plotting TWO dataframes, and that the base ggplot object has a NULL data argument! </span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>penguins, </span>
+<span id="cb14-11"><a href="#cb14-11"></a>             <span class="fu">aes</span>(bill_length_mm, flipper_length_mm)) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>preds_df, </span>
+<span id="cb14-13"><a href="#cb14-13"></a>            <span class="fu">aes</span>(bill_length_mm, pred_flipper),</span>
+<span id="cb14-14"><a href="#cb14-14"></a>            <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="tidy-modeling-parsnip" class="slide level2">
 <h2>Tidy modeling: <code>parsnip</code></h2>
+<p>parsnip is a package that gathers many different modeling functions and standardizes them into a common interface/language.</p>
+<p>For a simple <code>lm()</code> with two estimated parameters, this might be overkill, but it comes in very useful when you start dealing with a variety of modeling functions. Sometimes you may even want to try two different implementations of the same type of model to see how they compare, without needing to relearn/rewrite the syntax. Learn more at <a href="https://parsnip.tidymodels.org/" class="uri">https://parsnip.tidymodels.org/</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">fit</span>(flipper_length_mm <span class="sc">~</span> bill_length_mm, </span>
-<span id="cb11-4"><a href="#cb11-4"></a>      <span class="at">data =</span> penguins)</span>
-<span id="cb11-5"><a href="#cb11-5"></a></span>
-<span id="cb11-6"><a href="#cb11-6"></a><span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">fit</span>(flipper_length_mm <span class="sc">~</span> bill_length_mm, </span>
-<span id="cb11-9"><a href="#cb11-9"></a>      <span class="at">data =</span> penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3"></a>  <span class="fu">fit</span>(flipper_length_mm <span class="sc">~</span> bill_length_mm, </span>
+<span id="cb15-4"><a href="#cb15-4"></a>      <span class="at">data =</span> penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="model-responsibly" class="slide level2 smaller">
