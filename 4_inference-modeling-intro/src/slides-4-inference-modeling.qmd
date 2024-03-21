@@ -71,7 +71,7 @@ Support areas and interests:
 -   `parsnip`: standardized modeling interface
 
 ```{r}
-install.packages(c("tidymodels", "infer"))
+# install.packages(c("tidymodels", "infer"))
 ```
 :::
 
@@ -143,7 +143,7 @@ All have `mean` and `sd` arguments.
 ## Distributions
 
 | Distribution           | Name in functions | Example function | Applications                                              |
-|------------------|------------------|------------------|--------------------|
+|------------------|------------------|------------------|-------------------|
 | Normal (Gaussian)      | `norm`            | `pnorm()`        | Numerous (often assumed)                                  |
 | Student's $t$          | `t`               | `pt()`           | Estimating parameters without knowing $\sigma$; $t$-tests |
 | Binomial (Bernoulli)   | `binom`           | `pbinom()`       | Number of successes in `size` trials; logistic regression |
@@ -153,6 +153,12 @@ All have `mean` and `sd` arguments.
 : Commonly used distributions in the `stats` package
 
 ## Hypothesis tests
+
+With hypothesis tests, there is a *null hypothesis*, $H_0$, or "nothing to see here; just random noise." We use a frequency distribution to ask, what is the probability that $H_0$ is true, given our observations.
+
+For example: if the average U.S. adult male height is 175.3 cm, and a group of males measures as 180 cm, is this difference "significant"/interesting ($H_0$ is false), or due to chance ($H_0$ is true)? After all, there is a lot of individual variation in height....
+
+Rather than try to prove $H_1$ ("something interesting is happening"), we try to eliminate $H_0$ by limiting it to a small probability, often \<5% (but potentially \<1% or even less for some applications). This threshold is also called $\alpha$ (alpha). Which test we use is determined by the kind of question we want to ask and properties of our data.
 
 Hypothesis tests in base R tend to follow this format:
 
@@ -231,7 +237,26 @@ chisq_test(penguins, island ~ species)
 
 ⚠ This is not a good example of a chi-squared test, statistically speaking: our data do not meet the requirements for the test! But the example is left here because R will let us do it! (and it is syntactically correct)
 
+```{r}
+# are our observations evenly distributed across sex and species?
+chisq_test(penguins, sex ~ species)
+```
+
+The very high $p$ value confirms what we would see from a heatmap:
+
+```{r}
+penguins %>% 
+  drop_na() %>% 
+  group_by(sex, species) %>% 
+  summarize(count = n()) %>% 
+  ggplot() + geom_tile(aes(x=species, y=sex, fill=count))
+```
+
+While there are differences between the species, the sex observations are so evenly distributed that there is a 98% that this could have been a chance arrangement.
+
 ## Tidy inference: `infer`
+
+The `{infer}` package gives a standardized vocabulary/workflow for inference with a variety of tests. It returns data frames, which are easier to work with than a typical test-results object. It also has a nice visualization tool.
 
 ```{r}
 t <- penguins %>% 
@@ -362,12 +387,45 @@ linear_reg() %>%
       data = penguins)
 ```
 
+## Logistic regression example
+
+"What is the relationship between body mass (*continuous predictor*) and penguin sex (*binary outcome*)?"
+
+```{r}
+log_sex_mass <- logistic_reg() %>% 
+  set_engine("glm") %>% 
+  fit(sex ~ body_mass_g, 
+      data = penguins)
+
+x_range <- data.frame(
+  body_mass_g = seq(from=min(penguins$body_mass_g, na.rm=TRUE), 
+            to=max(penguins$body_mass_g, na.rm=TRUE), 
+            by=5))
+predict(log_sex_mass, new_data = x_range)
+
+# combine x_range and predictions into a data frame:
+preds_df <- x_range %>% 
+  bind_cols(predict(log_sex_mass, new_data = x_range)) %>% 
+  rename(pred_sex = ".pred_class")
+
+ggplot() +
+  geom_point(data=(drop_na(penguins)), aes(body_mass_g, sex)) +
+  geom_line(data=preds_df, aes(body_mass_g, pred_sex), 
+            color="red", linewidth=1.25)
+```
+
+To learn more about tidy modeling, go here for many examples/tutorials: <https://www.tidymodels.org/learn/>
+
 ## Model *responsibly* {.smaller}
 
+Some reminders....
+
+-   "All models are wrong, but some are useful" ([George Box](https://en.wikipedia.org/wiki/All_models_are_wrong))
 -   Consider the validity and reliability of your measures
 -   Correlation $\neq$ causation
--   Always keep in mind the assumptions made by your chosen method/model
+-   Always keep in mind the assumptions made by your chosen method/model, and consider what tradeoffs are being made in Approach A versus Approach B
 -   Validate unexpected results by recomputing "by hand" and/or running a different code implementation (or even in a different software)
+-   Try to understand a method---reading, watching videos, looking at examples, seeing how it is used in papers in your field---prior to running any code for it. (Remember our cautionary chi-squared example!)
 
 # Wrap up
 
